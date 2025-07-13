@@ -1,4 +1,18 @@
-// data/survey-data.js
+
+// Survey emotion color mapping
+const emotionColors = {
+  'Fear': '#DC2626',        // Red
+  'Anger': '#DC2626',       // Red  
+  'Sadness': '#1D4ED8',     // Blue
+  'Numbness': '#6B7280',    // Gray
+  'Anxiety': '#7C3AED',     // Purple
+  'Guilt': '#059669',       // Green
+  'Denial': '#000000',      // Black
+  'Disappointment': '#F59E0B', // Orange/Yellow
+  'Excitement': '#F59E0B',  // Orange
+  'Relief': '#1D4ED8',      // Blue
+  'Hope': '#059669'         // Green
+};
 
 // Phase 1: Reasons for leaving (black bubbles)
 const reasonsForLeaving = [
@@ -13,13 +27,16 @@ const reasonsForLeaving = [
   { word: 'Decay of Healthcare System', color: [0.1, 0.1, 0.1], responses: 1 }
 ];
 
-// Phase 2: Emotions during immigration (colorful - for later)
+// Phase 1: Emotions during immigration (now with proper colors!)
 const emotionsDuringImmigration = [
-  { word: 'Hope', color: [0.3, 0.8, 0.3], responses: 15 },
-  { word: 'Fear', color: [0.9, 0.3, 0.3], responses: 12 },
-  { word: 'Uncertainty', color: [0.9, 0.6, 0.2], responses: 8 },
-  { word: 'Relief', color: [0.2, 0.5, 0.9], responses: 6 },
-  { word: 'Excitement', color: [0.7, 0.3, 0.8], responses: 5 }
+  { word: 'Hope', color: emotionColors['Hope'], responses: 15 },
+  { word: 'Fear', color: emotionColors['Fear'], responses: 12 },
+  { word: 'Anxiety', color: emotionColors['Anxiety'], responses: 8 },
+  { word: 'Relief', color: emotionColors['Relief'], responses: 6 },
+  { word: 'Excitement', color: emotionColors['Excitement'], responses: 5 },
+  { word: 'Sadness', color: emotionColors['Sadness'], responses: 5 },
+  { word: 'Anger', color: emotionColors['Anger'], responses: 4 },
+  { word: 'Guilt', color: emotionColors['Guilt'], responses: 3 }
 ];
 
 // Phase 3: Current climate (for later)
@@ -30,6 +47,7 @@ const currentClimateEmotions = [
 ];
 
 module.exports = {
+  emotionColors,
   reasonsForLeaving,
   emotionsDuringImmigration,
   currentClimateEmotions

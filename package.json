@@ -6,6 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "part1": "canvas-sketch-cli sketches/sketch_part1.js --open",
     "part1:shader": "canvas-sketch-cli sketches/shaderSketchPart1.js --open",
+    "part1:p5": "canvas-sketch-cli sketches/part1_p5.js --open",
     "part2": "canvas-sketch-cli sketches/sketch_part2.js --open",
     "part3": "canvas-sketch-cli sketches/sketch_part3.js --open",
     "dev:shader": "canvas-sketch-cli sketches/shaderSketch.js --open",
@@ -17,7 +18,9 @@
   "dependencies": {
     "canvas-sketch": "^0.7.7",
     "canvas-sketch-util": "^1.10.0",
-    "glslify": "^7.1.1"
+    "glslify": "^7.1.1",
+    "p5": "^2.0.3",
+    "simplex-noise": "^4.0.3"
   },
   "description": "",
   "devDependencies": {
