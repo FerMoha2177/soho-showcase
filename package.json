@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "part1": "canvas-sketch-cli sketches/sketch_part1.js --open",
+    "part1:shader": "canvas-sketch-cli sketches/shaderSketchPart1.js --open",
+    "part2": "canvas-sketch-cli sketches/sketch_part2.js --open",
+    "part3": "canvas-sketch-cli sketches/sketch_part3.js --open",
+    "dev:shader": "canvas-sketch-cli sketches/shaderSketch.js --open",
+    "dev:main": "canvas-sketch-cli sketches/main.js --open"
   },
   "keywords": [],
   "author": "",

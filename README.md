@@ -1,5 +1,16 @@
 # Soho ShowCase
 
+## Installation
+
+```bash
+npm install
+```
+
+Make sure to have node.js installed on your system.
+
+
+## Usage
+
 This is a showcase of the survey data from the Soho survey.
 To run the sketch use the following command:
 

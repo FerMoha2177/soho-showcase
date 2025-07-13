@@ -17,10 +17,34 @@ const sketch = ({ width, height }) => {
   const kernels = [];
   let nextKernelTime = 1.0; // When next kernel pops
   let kernelId = 0;
-  
+  let iterTimes = 2;
   // Survey data for different sized kernels
-  const surveyWords = [
-    { word: 'Violence', color: '#4CAF50',responses: 4 }, ///4
+  const reasonForLeavingWords = [
+    { word: 'Violence', color: '#000000',responses: 4 }, ///4
+    { word: 'Disinformation', color: '#000000',responses: 1 }, // 1
+    { word: 'Police Brutality', color: '#000000',responses: 2 }, // 2
+    { word: 'Lack of Opportunity', color: '#000000',responses: 12 }, // 12
+    { word: 'Economic Instability', color: '#000000',responses: 4 }, // 4
+    { word: 'Decay of Educational System', color: '#000000',responses: 2 }, // 2
+    { word: 'Decay of Healthcare System', color: '#000000', responses: 1 }, // 0
+    { word: 'Lack of Freedom of Speech', color: '#000000', responses: 2 }, // 2
+    { word: 'Corrupt Government', color: '#000000', responses: 6 } // 2
+  ];
+
+  // const reasonForLeavingWords = [
+  //   { word: 'Violence', color: '#4CAF50',responses: 4 }, ///4
+  //   { word: 'Disinformation', color: '#F44336',responses: 1 }, // 1
+  //   { word: 'Police Brutality', color: '#FF9800',responses: 2 }, // 2
+  //   { word: 'Lack of Opportunity', color: '#9E9E9E',responses: 12 }, // 12
+  //   { word: 'Economic Instability', color: '#2196F3',responses: 4 }, // 4
+  //   { word: 'Decay of Educational System', color: '#9C27B0',responses: 2 }, // 2
+  //   { word: 'Decay of Healthcare System', color: '#607D8B', responses: 1 }, // 0
+  //   { word: 'Lack of Freedom of Speech', color: '#00BCD4', responses: 2 }, // 2
+  //   { word: 'Corrupt Government', color: '#00BCD4', responses: 6 } // 2
+  // ];
+
+  const emotionsForImmigratingWords = [
+    { word: 'Fear', color: '#4CAF50',responses: 4 }, ///4
     { word: 'Disinformation', color: '#F44336',responses: 1 }, // 1
     { word: 'Police Brutality', color: '#FF9800',responses: 2 }, // 2
     { word: 'Lack of Opportunity', color: '#9E9E9E',responses: 12 }, // 12
@@ -32,7 +56,7 @@ const sketch = ({ width, height }) => {
   ];
   
   // Calculate sizes based on survey responses
-  const maxResponses = Math.max(...surveyWords.map(w => w.responses));
+  const maxResponses = Math.max(...reasonForLeavingWords.map(w => w.responses));
   const minRadius = 50;
   const maxRadius = 200;
   
@@ -58,6 +82,8 @@ const sketch = ({ width, height }) => {
       mass: size / 20 // Mass affects collisions
     };
   }
+
+  
   
   function updateKernel(kernel, deltaTime) {
     kernel.age += deltaTime;
@@ -140,7 +166,7 @@ const sketch = ({ width, height }) => {
           
           // Calculate collision response based on masses
           const totalMass = k1.mass + k2.mass;
-          const force = 0.3; // Collision force
+          const force = 0.5; // Collision force
           
           const forceX = (dx / distance) * force;
           const forceY = (dy / distance) * force;
@@ -153,33 +179,8 @@ const sketch = ({ width, height }) => {
       }
     }
   }
-  
-  return ({ context, time, width, height }) => {
-    const deltaTime = 1/60; // Assume 60fps
-    
-    // Clear screen
-    context.fillStyle = '#1a1a1a';
-    context.fillRect(0, 0, width, height);
-    
-    // Draw container
-    context.strokeStyle = '#444';
-    context.lineWidth = 3;
-    context.strokeRect(container.x, container.y, container.width, container.height);
-    
-    // Add new kernels periodically
-    if (time > nextKernelTime && kernels.length < surveyWords.length) {
-      const wordIndex = kernels.length % surveyWords.length;
-      kernels.push(createKernel(surveyWords[wordIndex]));
-      nextKernelTime = time + 0.5 + Math.random() * 1.0; // Random intervals
-    }
-    
-    // Update all kernels
-    kernels.forEach(kernel => updateKernel(kernel, deltaTime));
-    
-    // Handle collisions
-    checkCollisions();
-    
-    // Draw kernels
+
+  function drawKernels(context) {
     kernels.forEach(kernel => {
       if (kernel.currentRadius > 0) {
         // Main kernel
@@ -210,11 +211,58 @@ const sketch = ({ width, height }) => {
         }
       }
     });
+  } 
+
+  function drawContainer(context){
+    context.strokeStyle = '#444';
+    context.lineWidth = 3;
+    
+    context.beginPath();
+    
+    // Start at top-left corner
+    context.moveTo(container.x, container.y);
+    // Draw down the left side
+    context.lineTo(container.x, container.y + container.height);
+    // Draw across the bottom
+    context.lineTo(container.x + container.width, container.y + container.height);
+    // Draw up the right side
+    context.lineTo(container.x + container.width, container.y);
+    
+    context.stroke();
+}
+  
+  return ({ context, time, width, height }) => {
+    const deltaTime = 1/60; // Assume 60fps
+    
+    // Clear screen
+    context.fillStyle = '#1a1a1a';
+    context.fillRect(0, 0, width, height);
+    
+    // Draw container
+    drawContainer(context);
+    
+    // Add new kernels periodically
+    if (time > nextKernelTime && kernels.length < reasonForLeavingWords.length * iterTimes) {
+      const wordIndex = kernels.length % reasonForLeavingWords.length;
+      kernels.push(createKernel(reasonForLeavingWords[wordIndex]));
+      nextKernelTime = time + 0.5 + Math.random() * 0.2; // Random intervals
+    }
+    
+    // Update all kernels
+    kernels.forEach(kernel => updateKernel(kernel, deltaTime));
+    
+    // Handle collisions
+    checkCollisions();
+    
+    // Draw kernels
+    console.log('draw kernels');
+
+    drawKernels(context);
     
     // Instructions
     context.fillStyle = 'white';
     context.font = '16px Arial';
-    context.fillText(`Kernels: ${kernels.length}/${surveyWords.length}`, 10, 25);
+    context.fillText(`Kernels: ${kernels.length}/${reasonForLeavingWords.length * iterTimes}`, 10, 25);
   };
 };
 
