@@ -14,7 +14,7 @@
     "build": "npm run build:clean && npm run build:main && npm run build:assets",
     "build:clean": "rimraf dist",
     "build:main": "canvas-sketch-cli sketches/main.js --build --dir dist --name index",
-    "build:assets": "cp -r data dist/ || xcopy data dist\\data /E /I",
+    "build:assets": "cp -r sketches/data dist/ || echo 'No data folder found'",
     "serve": "npx http-server dist -p 8080",
     "preview": "npm run build && npm run serve"
   },
