@@ -5,8 +5,8 @@ pipeline:
   orgIdentifier: default
   stages:
     - stage:
-        name: Build
-        identifier: Build
+        name: Build and Deploy
+        identifier: Build_Deploy
         type: CI
         spec:
           cloneCodebase: true
@@ -42,6 +42,15 @@ pipeline:
                     command: |
                       ls -la dist/
                       echo "Build completed successfully!"
+              - step:
+                  type: Run
+                  name: Deploy to Netlify
+                  identifier: Deploy_Netlify
+                  spec:
+                    shell: Sh
+                    command: |
+                      npm install -g netlify-cli
+                      netlify deploy --dir=dist --prod --auth=<+secrets.getValue("NETLIFY_TOKEN")> --site=<+secrets.getValue("NETLIFY_SITE_ID")>
           platform:
             os: Linux
             arch: Amd64
