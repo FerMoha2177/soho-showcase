@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_FerMoha2177_soho_showcase_1752684626753-pr-trigger-input-set
+  identifier: Build_FerMoha2177_soho_showcase_1752684626753prtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: SOHOSHOWCASE
+  pipeline:
+    identifier: Build_FerMoha2177_soho_showcase_1752684626753
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
