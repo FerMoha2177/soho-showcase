@@ -49,8 +49,18 @@ pipeline:
                   spec:
                     shell: Sh
                     command: |
+                      # Use Node 20 for netlify-cli compatibility
+                      curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+                      sudo apt-get install -y nodejs
+
+                      # Install netlify-cli
                       npm install -g netlify-cli
-                      netlify deploy --dir=dist --prod --auth=<+secrets.getValue("NETLIFY_TOKEN")> --site=<+secrets.getValue("NETLIFY_SITE_ID")>
+
+                      # Deploy (fix secret syntax)
+                      netlify deploy --dir=dist --prod --auth="$NETLIFY_TOKEN" --site="$NETLIFY_SITE_ID"
+                    envVariables:
+                      NETLIFY_TOKEN: <+secrets.getValue("netlify_access_token90")>
+                      NETLIFY_SITE_ID: <+secrets.getValue("NETLIFY_SITE_ID")>
           platform:
             os: Linux
             arch: Amd64
