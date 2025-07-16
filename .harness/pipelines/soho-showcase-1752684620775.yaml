@@ -56,8 +56,14 @@ pipeline:
                       # Install netlify-cli
                       npm install -g netlify-cli
 
-                      # Deploy (fix secret syntax)
-                      netlify deploy --dir=dist --prod --auth="$NETLIFY_TOKEN" --site="$NETLIFY_SITE_ID"
+                      # Login and deploy directly with auth token
+                      echo "Deploying to Netlify..."
+                      netlify deploy \
+                        --dir=dist \
+                        --prod \
+                        --auth="$NETLIFY_TOKEN" \
+                        --site="$NETLIFY_SITE_ID" \
+                        --message="Automated deployment from Harness CI/CD"
                     envVariables:
                       NETLIFY_TOKEN: <+secrets.getValue("netlify_access_token90")>
                       NETLIFY_SITE_ID: <+secrets.getValue("NETLIFY_SITE_ID")>
