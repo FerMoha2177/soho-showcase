@@ -10,7 +10,13 @@
     "part2": "canvas-sketch-cli sketches/sketch_part2.js --open",
     "part3": "canvas-sketch-cli sketches/sketch_part3.js --open",
     "dev:shader": "canvas-sketch-cli sketches/shaderSketch.js --open",
-    "dev:main": "canvas-sketch-cli sketches/main.js --open"
+    "dev:main": "canvas-sketch-cli sketches/main.js --open",
+    "build": "npm run build:clean && npm run build:main && npm run build:assets",
+    "build:clean": "rimraf dist",
+    "build:main": "canvas-sketch-cli sketches/main.js --build --dir dist --name index",
+    "build:assets": "cp -r data dist/ || xcopy data dist\\data /E /I",
+    "serve": "npx http-server dist -p 8080",
+    "preview": "npm run build && npm run serve"
   },
   "keywords": [],
   "author": "",
