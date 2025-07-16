@@ -14,11 +14,34 @@ pipeline:
             steps:
               - step:
                   type: Run
-                  name: Echo Welcome Message
+                  name: Starting Build Proc msg
                   identifier: Echo_Welcome_Message
                   spec:
                     shell: Sh
-                    command: echo "Welcome to Harness CI"
+                    command: echo "Starting Build Process for Soho-Showcase"
+              - step:
+                  type: Run
+                  name: Install Dependencies
+                  identifier: Install_Dependencies
+                  spec:
+                    shell: Sh
+                    command: npm ci
+              - step:
+                  type: Run
+                  name: Running Build Scripts
+                  identifier: Running_Build_Script
+                  spec:
+                    shell: Sh
+                    command: npm run build
+              - step:
+                  type: Run
+                  name: Verify Build Output
+                  identifier: Verify_Build
+                  spec:
+                    shell: Sh
+                    command: |
+                      ls -la dist/
+                      echo "Build completed successfully!"
           platform:
             os: Linux
             arch: Amd64
