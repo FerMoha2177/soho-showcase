@@ -50,15 +50,21 @@ pipeline:
                     shell: Sh
                     command: |
                       # Use Node 20 for netlify-cli compatibility
+                      echo "\n Attempting to install node 20 for netlify cli\n"
                       curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
                       sudo apt-get install -y nodejs
 
-                      # Install netlify-cli
-                      npm install -g netlify-cli
+                      # Verify Node version and use the correct path
+                      echo "Node version check:"
+                      /usr/bin/node --version
+                      /usr/bin/npm --version
 
-                      # Login and deploy directly with auth token
+                      # Install netlify-cli with the correct Node version
+                      /usr/bin/npm install -g netlify-cli
+
+                      # Deploy using the correct paths
                       echo "Deploying to Netlify..."
-                      netlify deploy \
+                      /usr/bin/netlify deploy \
                         --dir=dist \
                         --prod \
                         --auth="$NETLIFY_TOKEN" \
