@@ -1,0 +1,33 @@
+pipeline:
+  name: Build soho-showcase
+  identifier: Build_FerMoha2177_soho_showcase_1752684626753
+  projectIdentifier: SOHOSHOWCASE
+  orgIdentifier: default
+  stages:
+    - stage:
+        name: Build
+        identifier: Build
+        type: CI
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Echo Welcome Message
+                  identifier: Echo_Welcome_Message
+                  spec:
+                    shell: Sh
+                    command: echo "Welcome to Harness CI"
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Github_OAuth_1752684594713
+        repoName: FerMoha2177/soho-showcase
+        build: <+input>
