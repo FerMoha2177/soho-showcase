@@ -1,4 +1,5 @@
 
+
 const canvasSketch = require('canvas-sketch');
 const Phase1 = require('./phases/phase1-reasons-for-leaving');
 const { settings } = require('./config/settings');

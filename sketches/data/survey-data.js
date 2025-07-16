@@ -16,7 +16,7 @@ const emotionColors = {
 
 // Phase 1: Reasons for leaving (black bubbles)
 const reasonsForLeaving = [
-  { word: 'Lack of Opportunity', color: [0.1, 0.1, 0.1], responses: 12 },
+  { word: 'Lack\nof\nOpportunity', color: [0.1, 0.1, 0.1], responses: 12 },
   { word: 'Corrupt Government', color: [0.1, 0.1, 0.1], responses: 6 },
   { word: 'Violence', color: [0.1, 0.1, 0.1], responses: 4 },
   { word: 'Economic Instability', color: [0.1, 0.1, 0.1], responses: 4 },

@@ -6,7 +6,7 @@ const settings = {
   scaleToFit: true, // Fit everything on screen
   hotkeys: false,
   // Optional: For future audio reactivity
-  // playbackRate: 'throttle'
+  playbackRate: 'throttle'
 };
 
 module.exports = { settings };

@@ -100,10 +100,10 @@ const sketch = ({ gl, width, height }) => {
   const reasonsData = [
     { word: 'Violence', color: [0.1, 0.1, 0.1], responses: 4 },
     { word: 'Disinformation', color: [0.1, 0.1, 0.1], responses: 1 },
-    { word: 'Police Brutality', color: [0.1, 0.1, 0.1], responses: 2 },
-    { word: 'Lack of Opportunity', color: [0.1, 0.1, 0.1], responses: 12 },
-    { word: 'Economic Instability', color: [0.1, 0.1, 0.1], responses: 4 },
-    { word: 'Corrupt Government', color: [0.1, 0.1, 0.1], responses: 6 }
+    { word: 'Police\nBrutality', color: [0.1, 0.1, 0.1], responses: 2 },
+    { word: 'Lack\nof\nOpportunity', color: [0.1, 0.1, 0.1], responses: 12 },
+    { word: 'Economic\nInstability', color: [0.1, 0.1, 0.1], responses: 4 },
+    { word: 'Corrupt\nGovernment', color: [0.1, 0.1, 0.1], responses: 6 }
   ];
   
   const emotionsData = [
