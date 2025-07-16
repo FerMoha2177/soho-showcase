@@ -49,22 +49,26 @@ pipeline:
                   spec:
                     shell: Sh
                     command: |
-                      # Use Node 20 for netlify-cli compatibility
-                      echo "\n Attempting to install node 20 for netlify cli\n"
+                      # Install Node 20
                       curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
                       sudo apt-get install -y nodejs
 
-                      # Verify Node version and use the correct path
+                      # Verify Node version
                       echo "Node version check:"
                       /usr/bin/node --version
                       /usr/bin/npm --version
 
-                      # Install netlify-cli with the correct Node version
+                      # Install netlify-cli globally
                       /usr/bin/npm install -g netlify-cli
 
-                      # Deploy using the correct paths
+                      # Find where netlify was installed
+                      echo "Finding netlify CLI location:"
+                      which netlify
+                      /usr/bin/npm list -g netlify-cli
+
+                      # Deploy using the correct path (usually in /usr/lib/node_modules/.bin/)
                       echo "Deploying to Netlify..."
-                      /usr/bin/netlify deploy \
+                      $(which netlify) deploy \
                         --dir=dist \
                         --prod \
                         --auth="$NETLIFY_TOKEN" \
