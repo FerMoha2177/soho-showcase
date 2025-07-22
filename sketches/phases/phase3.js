@@ -1,327 +1,214 @@
-
-// phases/phase3-current.js
-// phases/phase3-current.js
+// phases/phase3-current.js - Clean implementation
 const { gratitudeResponses, concernResponses, copingMechanisms } = require('../data/survey-data');
-
-// Identity Core (central immigrant self)
-class IdentityCore {
-  constructor(x, y, radius) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.pulsePhase = 0;
-  }
-  
-  update(deltaTime) {
-    this.pulsePhase += deltaTime;
-  }
-  
-  render(context, time) {
-    const pulseScale = Math.sin(this.pulsePhase * 1.5) * 0.15 + 1;
-    const currentRadius = this.radius * pulseScale;
-    
-    // Outer glow (identity energy)
-    const outerGlow = context.createRadialGradient(
-      this.x, this.y, 0,
-      this.x, this.y, currentRadius * 2
-    );
-    outerGlow.addColorStop(0, 'rgba(255, 215, 0, 0.3)');
-    outerGlow.addColorStop(1, 'rgba(255, 215, 0, 0)');
-    
-    context.fillStyle = outerGlow;
-    context.beginPath();
-    context.arc(this.x, this.y, currentRadius * 2, 0, Math.PI * 2);
-    context.fill();
-    
-    // Main identity core gradient
-    const coreGradient = context.createRadialGradient(
-      this.x - currentRadius * 0.3, this.y - currentRadius * 0.3, 0,
-      this.x, this.y, currentRadius
-    );
-    coreGradient.addColorStop(0, '#FFD700');  // Gold center
-    coreGradient.addColorStop(0.4, '#FF8C00'); // Orange
-    coreGradient.addColorStop(0.8, '#FF4500'); // Red-orange
-    coreGradient.addColorStop(1, '#DC143C');   // Deep red edge
-    
-    // Draw core
-    context.fillStyle = coreGradient;
-    context.beginPath();
-    context.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
-    context.fill();
-    
-    // Inner highlight
-    const highlight = context.createRadialGradient(
-      this.x - currentRadius * 0.4, this.y - currentRadius * 0.4, 0,
-      this.x - currentRadius * 0.2, this.y - currentRadius * 0.2, currentRadius * 0.5
-    );
-    highlight.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-    highlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    
-    context.fillStyle = highlight;
-    context.beginPath();
-    context.arc(this.x - currentRadius * 0.3, this.y - currentRadius * 0.3, currentRadius * 0.3, 0, Math.PI * 2);
-    context.fill();
-  }
-}
-
-// Base Orbital Bubble
-class OrbitalBubble {
-  constructor(data, centerX, centerY, type = 'gratitude') {
-    this.word = data.word;
-    this.color = data.color;
-    this.responses = data.responses;
-    this.orbitRadius = data.orbitRadius;
-    this.orbitSpeed = data.orbitSpeed;
-    this.type = type;
-    
-    // Orbital mechanics
-    this.centerX = centerX;
-    this.centerY = centerY;
-    this.angle = Math.random() * Math.PI * 2; // Random starting position
-    this.direction = type === 'gratitude' ? 1 : -1; // Gratitude clockwise, concerns counter-clockwise
-    
-    // Bubble properties
-    this.bubbleRadius = 20 + (data.responses / 25) * 30; // Size based on responses
-    this.age = 0;
-    this.spawnTime = 0.5;
-    
-    // Visual effects
-    this.trailPoints = [];
-    this.maxTrailLength = 20;
-    
-    // Calculate initial position
-    this.updatePosition();
-  }
-  
-  updatePosition() {
-    this.x = this.centerX + Math.cos(this.angle) * this.orbitRadius;
-    this.y = this.centerY + Math.sin(this.angle) * this.orbitRadius;
-  }
-  
-  update(deltaTime) {
-    this.age += deltaTime;
-    
-    // Update orbital position
-    this.angle += this.orbitSpeed * this.direction * deltaTime;
-    this.updatePosition();
-    
-    // Add trail point
-    if (this.age > this.spawnTime) {
-      this.trailPoints.push({ 
-        x: this.x, 
-        y: this.y, 
-        age: 0,
-        alpha: 1 
-      });
-      
-      if (this.trailPoints.length > this.maxTrailLength) {
-        this.trailPoints.shift();
-      }
-    }
-    
-    // Age trail points
-    this.trailPoints.forEach(point => {
-      point.age += deltaTime;
-      point.alpha = Math.max(0, 1 - (point.age / 3)); // Fade over 3 seconds
-    });
-  }
-  
-  render(context, time) {
-    // Don't render until spawned
-    if (this.age < this.spawnTime) {
-      return;
-    }
-    
-    // Render trail
-    this.renderTrail(context);
-    
-    // Current radius with spawn animation
-    const spawnProgress = Math.min(1, (this.age - this.spawnTime) / 0.5);
-    const currentRadius = this.bubbleRadius * spawnProgress;
-    
-    if (currentRadius <= 0) return;
-    
-    // Create bubble gradient
-    const gradient = context.createRadialGradient(
-      this.x - currentRadius * 0.3, this.y - currentRadius * 0.3, 0,
-      this.x, this.y, currentRadius
-    );
-    
-    if (this.type === 'gratitude') {
-      // Warm, positive glow
-      gradient.addColorStop(0, this.color + 'FF');
-      gradient.addColorStop(0.7, this.color + 'AA');
-      gradient.addColorStop(1, this.color + '44');
-    } else {
-      // Warning/concern styling
-      gradient.addColorStop(0, this.color + 'DD');
-      gradient.addColorStop(0.6, this.color + '88');
-      gradient.addColorStop(1, this.color + '22');
-    }
-    
-    // Draw main bubble
-    context.fillStyle = gradient;
-    context.beginPath();
-    context.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
-    context.fill();
-    
-    // Add glow effect
-    this.renderGlow(context, currentRadius, time);
-    
-    // Render text
-    this.renderText(context, currentRadius);
-  }
-  
-  renderTrail(context) {
-    if (this.trailPoints.length < 2) return;
-    
-    const trailColor = this.type === 'gratitude' ? '100, 255, 100' : '255, 100, 100';
-    
-    for (let i = 1; i < this.trailPoints.length; i++) {
-      const point = this.trailPoints[i];
-      const prevPoint = this.trailPoints[i - 1];
-      
-      if (point.alpha > 0) {
-        context.strokeStyle = `rgba(${trailColor}, ${point.alpha * 0.3})`;
-        context.lineWidth = 2;
-        context.beginPath();
-        context.moveTo(prevPoint.x, prevPoint.y);
-        context.lineTo(point.x, point.y);
-        context.stroke();
-      }
-    }
-  }
-  
-  renderGlow(context, radius, time) {
-    const pulseIntensity = Math.sin(time * 2 + this.angle) * 0.3 + 0.7;
-    
-    if (this.type === 'gratitude') {
-      // Sparkle effects for gratitude
-      for (let i = 0; i < 3; i++) {
-        const sparkleAngle = time * 3 + i * (Math.PI * 2 / 3);
-        const sparkleX = this.x + Math.cos(sparkleAngle) * radius * 0.7;
-        const sparkleY = this.y + Math.sin(sparkleAngle) * radius * 0.7;
-        
-        context.fillStyle = `rgba(255, 255, 255, ${pulseIntensity * 0.8})`;
-        context.beginPath();
-        context.arc(sparkleX, sparkleY, 2, 0, Math.PI * 2);
-        context.fill();
-      }
-    } else {
-      // Warning pulse for concerns
-      context.strokeStyle = `rgba(255, 0, 0, ${pulseIntensity * 0.4})`;
-      context.lineWidth = 2;
-      context.beginPath();
-      context.arc(this.x, this.y, radius + 3, 0, Math.PI * 2);
-      context.stroke();
-    }
-  }
-  
-  renderText(context, radius) {
-    if (radius < 15) return; // Don't show text on very small bubbles
-    
-    context.fillStyle = this.type === 'gratitude' ? '#FFFFFF' : '#FFFFFF';
-    context.font = `bold ${Math.min(14, radius / 3)}px Arial`;
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    
-    // Handle multi-line text
-    const lines = this.word.split('\n');
-    const lineHeight = Math.min(16, radius / 2.5);
-    const startY = this.y - ((lines.length - 1) * lineHeight) / 2;
-    
-    lines.forEach((line, index) => {
-      context.fillText(line, this.x, startY + index * lineHeight);
-    });
-  }
-}
+const { OrbitalBubble, IdentityCore } = require('../physics/orbital-bubble');
 
 class Phase3 {
-  constructor(context, width, height) {
-    this.context = context;
+  constructor(width, height, audioSystem = null) {
     this.width = width;
     this.height = height;
     this.centerX = width / 2;
     this.centerY = height / 2;
+    this.audioSystem = audioSystem;
     
-    // Create identity core
-    this.identityCore = new IdentityCore(this.centerX, this.centerY, 35);
+    // Create identity core (LARGER SIZE)
+    this.identityCore = new IdentityCore(this.centerX, this.centerY, 80, audioSystem); // Increased from 35
     
-    // Create orbital bubbles
-    this.gratitudeBubbles = [];
-    this.concernBubbles = [];
-    this.copingBubbles = [];
+    // Create orbital systems
+    this.orbitalSystems = {
+      gratitude: [],
+      concern: [],
+      coping: []
+    };
     
-    this.spawnBubbles();
+    this.initializeOrbitalSystems();
     
-    console.log('Phase 3 initialized with orbital system');
+    console.log('Phase 3 initialized with clean orbital architecture');
   }
   
-  spawnBubbles() {
-    // Create gratitude bubbles (clockwise)
-    gratitudeResponses.forEach((data, index) => {
-      const bubble = new OrbitalBubble(data, this.centerX, this.centerY, 'gratitude');
+  initializeOrbitalSystems() {
+    // Initialize gratitude bubbles (clockwise, warm colors)
+    this.orbitalSystems.gratitude = gratitudeResponses.map((data, index) => {
+      const bubble = new OrbitalBubble(data, this.centerX, this.centerY, 'gratitude', this.audioSystem);
       bubble.age = -index * 0.3; // Stagger spawn times
-      this.gratitudeBubbles.push(bubble);
+      return bubble;
     });
     
-    // Create concern bubbles (counter-clockwise)
-    concernResponses.forEach((data, index) => {
-      const bubble = new OrbitalBubble(data, this.centerX, this.centerY, 'concern');
-      bubble.age = -index * 0.25; // Slightly different stagger
-      this.concernBubbles.push(bubble);
+    // Initialize concern bubbles (counter-clockwise, warning colors)
+    this.orbitalSystems.concern = concernResponses.map((data, index) => {
+      const bubble = new OrbitalBubble(data, this.centerX, this.centerY, 'concern', this.audioSystem);
+      bubble.age = -index * 0.25;
+      return bubble;
     });
     
-    // Create coping mechanism bubbles (fast inner orbits)
-    copingMechanisms.forEach((data, index) => {
-      const bubble = new OrbitalBubble(data, this.centerX, this.centerY, 'coping');
+    // Initialize coping mechanism bubbles (fast inner orbits)
+    this.orbitalSystems.coping = copingMechanisms.map((data, index) => {
+      const bubble = new OrbitalBubble(data, this.centerX, this.centerY, 'coping', this.audioSystem);
       bubble.age = -index * 0.2;
-      this.copingBubbles.push(bubble);
+      return bubble;
     });
   }
   
-  render({ context, time, width, height }) {
-    // Dark space background
-    context.fillStyle = '#0a0a0a';
-    context.fillRect(0, 0, width, height);
+  // Audio callbacks - delegate to all orbital elements
+  onBeat(bassLevel) {
+    this.identityCore.onBeat(bassLevel);
+    this.getAllBubbles().forEach(bubble => bubble.onBeat(bassLevel));
+  }
+  
+  onAudioUpdate(audioData) {
+    this.getAllBubbles().forEach(bubble => bubble.onAudioUpdate(audioData));
+  }
+  
+  // Utility method to get all bubbles
+  getAllBubbles() {
+    return [
+      ...this.orbitalSystems.gratitude,
+      ...this.orbitalSystems.concern,
+      ...this.orbitalSystems.coping
+    ];
+  }
+  
+  update(deltaTime) {
+    // Update identity core
+    this.identityCore.update(deltaTime);
+    
+    // Update all orbital systems
+    this.getAllBubbles().forEach(bubble => bubble.update(deltaTime));
+  }
+  
+  render({ context, time, width, height, audioData }) {
+    // Audio-reactive background
+    this.renderBackground(context, width, height, audioData);
     
     // Draw subtle orbital guides
     this.renderOrbitalGuides(context);
     
-    // Update and render identity core
-    const deltaTime = 1/60;
-    this.identityCore.update(deltaTime);
+    // Render identity core
     this.identityCore.render(context, time);
     
     // Update and render all orbital bubbles
-    const allBubbles = [
-      ...this.gratitudeBubbles,
-      ...this.concernBubbles,
-      ...this.copingBubbles
-    ];
+    const deltaTime = 1/60;
+    this.update(deltaTime);
     
-    allBubbles.forEach(bubble => {
-      bubble.update(deltaTime);
-      bubble.render(context, time);
-    });
+    // Render bubbles by layer (coping -> gratitude -> concerns)
+    this.renderBubbleLayer(context, time, 'coping');
+    this.renderBubbleLayer(context, time, 'gratitude');
+    this.renderBubbleLayer(context, time, 'concern');
+    
+    // Show gravitational statistics and project context
+    if (time < 60) { // Show for first 60 seconds
+      this.renderProjectContext(context, width, height);
+    }
+  }
+  
+  renderProjectContext(context, width, height) {
+    // Semi-transparent background for readability
+    context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    context.fillRect(20, 20, 420, 200);
+    
+    context.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    context.font = 'bold 16px Arial';
+    context.textAlign = 'left';
+    
+    let y = 45;
+    context.fillText('The Immigrant\'s Orbital System - 2025', 30, y);
+    
+    context.font = '13px Arial';
+    y += 25;
+    context.fillText('🌟 Golden Core: Immigrant identity & resilience', 30, y);
+    y += 18;
+    context.fillText('💚 Green Orbits: What we\'re grateful for (clockwise)', 30, y);
+    y += 18;
+    context.fillText('⚠️  Red Orbits: Current sociopolitical concerns (counter-clockwise)', 30, y);
+    y += 18;
+    context.fillText('✨ Inner Orbits: Coping mechanisms that keep us grounded', 30, y);
+    
+    y += 25;
+    context.font = 'bold 12px Arial';
+    context.fillText('Gravitational Physics:', 30, y);
+    context.font = '11px Arial';
+    y += 18;
+    context.fillText('• Survey response count = Gravitational mass & orbital speed', 30, y);
+    y += 15;
+    context.fillText('• More responses = Larger bubbles & stronger influence', 30, y);
+    y += 15;
+    context.fillText('• Gratitude pulls closer to identity; Concerns push away', 30, y);
+    y += 15;
+    context.fillText('• The orbital dance shows how hope & fear coexist', 30, y);
+  }
+  
+  renderBackground(context, width, height, audioData) {
+    let bgBrightness = 10;
+    if (audioData?.bassLevel) {
+      bgBrightness += audioData.bassLevel * 5;
+    }
+    
+    // Create subtle space gradient
+    const gradient = context.createRadialGradient(
+      width / 2, height / 2, 0,
+      width / 2, height / 2, Math.max(width, height) / 2
+    );
+    
+    gradient.addColorStop(0, `rgb(${Math.floor(bgBrightness * 1.5)}, ${Math.floor(bgBrightness * 1.2)}, ${bgBrightness})`);
+    gradient.addColorStop(1, `rgb(${bgBrightness}, ${Math.floor(bgBrightness * 1.2)}, ${Math.floor(bgBrightness * 1.5)})`);
+    
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
   }
   
   renderOrbitalGuides(context) {
-    // Draw very subtle orbital paths
-    const orbits = [70, 75, 80, 85, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250];
+    // Get all unique orbit radii
+    const allRadii = new Set();
+    this.getAllBubbles().forEach(bubble => {
+      allRadii.add(bubble.orbitRadius);
+    });
     
+    // Draw subtle guides
     context.strokeStyle = 'rgba(255, 255, 255, 0.03)';
     context.lineWidth = 1;
     
-    orbits.forEach(radius => {
+    Array.from(allRadii).forEach(radius => {
       context.beginPath();
       context.arc(this.centerX, this.centerY, radius, 0, Math.PI * 2);
       context.stroke();
     });
   }
   
+  renderBubbleLayer(context, time, systemType) {
+    this.orbitalSystems[systemType].forEach(bubble => {
+      bubble.render(context, time);
+    });
+  }
+  
+  // Phase lifecycle
   isComplete(time) {
     return time > 30; // 30 seconds to appreciate the orbital dance
+  }
+  
+  // Handle resize
+  resize(width, height) {
+    this.width = width;
+    this.height = height;
+    this.centerX = width / 2;
+    this.centerY = height / 2;
+    
+    // Update identity core position
+    this.identityCore.x = this.centerX;
+    this.identityCore.y = this.centerY;
+    
+    // Update all bubble centers
+    this.getAllBubbles().forEach(bubble => {
+      bubble.centerX = this.centerX;
+      bubble.centerY = this.centerY;
+      bubble.updatePosition();
+    });
+  }
+  
+  // Cleanup
+  destroy() {
+    // Clean up any resources if needed
+    this.orbitalSystems = null;
+    this.identityCore = null;
+    this.audioSystem = null;
   }
 }
 
