@@ -267,7 +267,7 @@ class AudioSystem {
     
     // Load demo audio file
     async loadDemoAudio() {
-      return await this.loadFile('./data/audio/bubblebeat1.wav');
+      return await this.loadFile('./data/audio/bubblebeat1.mp3');
     }
     
     // Play/pause toggle

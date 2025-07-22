@@ -89,7 +89,6 @@ module.exports = {
   emotionColors,
   reasonsForLeaving,
   emotionsDuringImmigration,
-  currentClimateEmotions,
   gratitudeResponses,
   concernResponses,
   copingMechanisms

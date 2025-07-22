@@ -10,8 +10,8 @@ const sketch = ({ width, height, canvas }) => {
   console.log('🎨 Sketch initialized with audio support:', { width, height });
   
   // Initialize Phase 1 with audio-aware capabilities
-  //const currentPhase = new Phase1(width, height, audioSystem);
-  const currentPhase = new Phase3(width, height, audioSystem);
+  const currentPhase = new Phase1(width, height, audioSystem);
+  //const currentPhase = new Phase3(width, height, audioSystem);
 
   let phaseStartTime = 0;
   let audioInitialized = false;
