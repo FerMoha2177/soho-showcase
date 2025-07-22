@@ -39,16 +39,58 @@ const emotionsDuringImmigration = [
   { word: 'Guilt', color: emotionColors['Guilt'], responses: 3 }
 ];
 
-// Phase 3: Current climate (for later)
-const currentClimateEmotions = [
-  { word: 'Concerned', color: [0.9, 0.4, 0.2], responses: 18 },
-  { word: 'Hopeful', color: [0.5, 0.8, 0.3], responses: 12 },
-  { word: 'Frustrated', color: [0.8, 0.2, 0.4], responses: 10 }
+
+// Phase 2 In progress...
+
+
+
+
+
+// Phase 3: Gratitude responses (what immigrants are thankful for)
+const gratitudeResponses = [
+  { word: 'My\nFriends', color: '#4CAF50', responses: 15, orbitRadius: 120, orbitSpeed: 0.5 },
+  { word: 'My\nCommunity', color: '#2196F3', responses: 14, orbitRadius: 160, orbitSpeed: 0.4 },
+  { word: 'My\nFreedom', color: '#9C27B0', responses: 18, orbitRadius: 200, orbitSpeed: 0.3 },
+  { word: 'Feeling\nSafety', color: '#00BCD4', responses: 12, orbitRadius: 100, orbitSpeed: 0.6 },
+  { word: 'My\nEducation', color: '#FF9800', responses: 10, orbitRadius: 140, orbitSpeed: 0.45 },
+  { word: 'Growth\nOpportunities', color: '#8BC34A', responses: 13, orbitRadius: 180, orbitSpeed: 0.35 },
+  { word: 'Economic\nStability', color: '#FFC107', responses: 9, orbitRadius: 130, orbitSpeed: 0.5 },
+  { word: 'Cultural\nConnection', color: '#E91E63', responses: 11, orbitRadius: 150, orbitSpeed: 0.42 },
+  { word: 'Learning\nEnglish', color: '#673AB7', responses: 8, orbitRadius: 110, orbitSpeed: 0.55 },
+  { word: 'New\nHome', color: '#795548', responses: 16, orbitRadius: 170, orbitSpeed: 0.38 }
 ];
 
+// Phase 3: Concern responses (current sociopolitical worries)
+const concernResponses = [
+  { word: 'Growing\nRacism', color: '#D32F2F', responses: 22, orbitRadius: 250, orbitSpeed: 0.25 },
+  { word: 'Disinformation\n& Ignorance', color: '#F44336', responses: 18, orbitRadius: 220, orbitSpeed: 0.3 },
+  { word: 'Rights\nNot Valued', color: '#FF5722', responses: 19, orbitRadius: 230, orbitSpeed: 0.28 },
+  { word: 'Government\nAbuse of Power', color: '#B71C1C', responses: 17, orbitRadius: 210, orbitSpeed: 0.32 },
+  { word: 'Justice\nSystem Distrust', color: '#37474F', responses: 14, orbitRadius: 190, orbitSpeed: 0.35 },
+  { word: 'Education\nSystem Decay', color: '#795548', responses: 12, orbitRadius: 180, orbitSpeed: 0.38 },
+  { word: 'Lack of\nFree Speech', color: '#607D8B', responses: 13, orbitRadius: 185, orbitSpeed: 0.36 },
+  { word: 'Economic\nInstability', color: '#424242', responses: 15, orbitRadius: 200, orbitSpeed: 0.33 },
+  { word: 'Fear of\nHaving to Leave', color: '#263238', responses: 16, orbitRadius: 205, orbitSpeed: 0.31 },
+  { word: 'Lack of\nImmigrant Empathy', color: '#4E342E', responses: 11, orbitRadius: 175, orbitSpeed: 0.39 }
+];
+
+// Phase 3: Coping mechanisms (inner fast orbits)
+const copingMechanisms = [
+  { word: 'Faith', color: '#FFD700', responses: 14, orbitRadius: 80, orbitSpeed: 0.8 },
+  { word: 'Hope', color: '#FFA726', responses: 16, orbitRadius: 85, orbitSpeed: 0.75 },
+  { word: 'Family\n& Friends', color: '#66BB6A', responses: 20, orbitRadius: 90, orbitSpeed: 0.7 },
+  { word: 'Community', color: '#42A5F5', responses: 13, orbitRadius: 75, orbitSpeed: 0.85 },
+  { word: 'Art', color: '#AB47BC', responses: 9, orbitRadius: 70, orbitSpeed: 0.9 },
+  { word: 'Political\nEducation', color: '#EF5350', responses: 11, orbitRadius: 78, orbitSpeed: 0.82 }
+];
+
+// Update the module.exports to include the new data
 module.exports = {
   emotionColors,
   reasonsForLeaving,
   emotionsDuringImmigration,
-  currentClimateEmotions
+  currentClimateEmotions,
+  gratitudeResponses,
+  concernResponses,
+  copingMechanisms
 };

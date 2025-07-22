@@ -2,6 +2,7 @@
 
 const canvasSketch = require('canvas-sketch');
 const Phase1 = require('./phases/phase1-reasons-for-leaving');
+const Phase3 = require('./phases/phase3');
 const { settings } = require('./config/settings');
 const { audioSystem } = require('./audio/audio-system');
 
@@ -9,7 +10,9 @@ const sketch = ({ width, height, canvas }) => {
   console.log('🎨 Sketch initialized with audio support:', { width, height });
   
   // Initialize Phase 1 with audio-aware capabilities
-  const currentPhase = new Phase1(width, height, audioSystem);
+  //const currentPhase = new Phase1(width, height, audioSystem);
+  const currentPhase = new Phase3(width, height, audioSystem);
+
   let phaseStartTime = 0;
   let audioInitialized = false;
   
