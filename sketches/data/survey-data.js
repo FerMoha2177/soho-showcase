@@ -40,11 +40,71 @@ const emotionsDuringImmigration = [
 ];
 
 
-// Phase 2 In progress...
-
-
-
-
+// Phase 2: New Home - Survey data from Isabella's implementation
+const phase2Data = {
+  questions: [
+    {
+      name: 'Internal Battles',
+      fullQuestion: 'What major internal battles did you face when you arrived to the United States?',
+      data: {
+        'Ansiedad /// Anxiety': 22,
+        'Soledad /// Loneliness': 17,
+        'Desgaste Mental /// Burnout': 15,
+        'Miedo /// Fear': 13,
+        'Tristeza /// Sadness': 11,
+        'Insensibilidad /// Numbness': 5,
+        'Confusión /// Confusion': 5,
+        'Culpa /// Guilt': 4,
+        'Decepción /// Disappointment': 2,
+        'Negación /// Denial': 2
+      }
+    },
+    {
+      name: 'What Helped Overcome',
+      fullQuestion: 'What helped you overcome the internal battles you experienced?',
+      data: {
+        'Familia o Amigos /// Family or Friends': 27,
+        'Nuevas Opportunidades /// New Opportunities': 18,
+        'El sentir seguridad /// To Feel Safety': 14,
+        'Sueños /// Dreams': 12,
+        'Fe /// Faith': 8,
+        'Ilusiones /// Hopes': 7,
+        'Arte /// Art': 7,
+        'La música /// Music': 7,
+        'Nuevos Amigos /// New Friends': 6,
+        'La Comunidad /// Community': 4,
+        'Compartir con otros inmigrantes /// Share with other immigrants': 2,
+        'Disfrutar de la libertad de expresión /// Enjoy freedom of speech': 1
+      }
+    },
+    {
+      name: 'Reasons to Choose US',
+      fullQuestion: 'What were the main reasons that inspired you to choose the United States as your "new home"?',
+      data: {
+        'Las oportunidades de Trabajo /// The Opportunities to work': 20,
+        'La seguridad y establidad del pais /// The safety and stability of the country': 19,
+        'Acceso a educación de calidad /// Access to world-class education': 11,
+        '"El Sueño Americano" /// "The American Dream"': 10,
+        'Su sistema democratico /// Its democratic system': 7,
+        'Acceso a un proceso sencillo para conseguir residencia legal /// Access to a straight forward process to achieve permanent residency': 5,
+        'La diversidad y gran población de inmigrantes /// The diversity and strong immigrant population': 4,
+        'Confianza en su sistema judicial /// Trust in its justice system': 3,
+        'Familia /// Family': 4
+      }
+    }
+  ],
+  // Color distribution based on Phase 2 survey responses (Blue most common)
+  colorDistribution: [
+    '#0067A3', // Blue (9 responses)
+    '#00A651', // Green (8 responses) 
+    '#FF6900', // Orange (5 responses)
+    '#E84A8A', // Pink (4 responses)
+    '#663399', // Purple (3 responses)
+    '#FFCC00', // Yellow (2 responses)
+    '#F7F7F7', // White (1 response)
+    '#2B2B2B'  // Black (1 response)
+  ]
+};
 
 // Phase 3: Gratitude responses (INCREASED SPACING)
 const gratitudeResponses = [
@@ -83,12 +143,48 @@ const copingMechanisms = [
   { word: 'Art', color: '#AB47BC', responses: 9, orbitRadius: 85, orbitSpeed: 0.7 },
   { word: 'Political\nEducation', color: '#EF5350', responses: 11, orbitRadius: 105, orbitSpeed: 0.6 }
 ];
-// Update the module.exports to include the new data
+
+
+//phase 4: identity reflections
+// Phase 4: Identity reflections from final survey question (28 real responses)
+const identityReflections = [
+  "Ser inmigrante, especialmente en estos momentos de incertidumbre, me ha hecho sentir aún más orgullo de ser latina. Sí, estoy preocupada, pero también me he dado cuenta de que frente al racismo, la indiferencia y la xenofobia, nosotros los latinos seguimos siendo especiales: cálidos, acogedores, alegres y, sobre todo, fuertes. Esta experiencia también ha despertado en mí una empatía y entendimiento aún más profundo por otros grupos étnicos y comunidades que han vivido bajo opresión por sus cultural. Siempre sentí empatía, pero nunca había comprendido su experiencia con tanta cercanía como ahora.",
+  "Ha sido un reto pero que me ha hecho crecer en todo nivel personal",
+  "Emigrar fue una decisión propia, pero hacerlo sola marco un antes y un despues en mi vida. Lejos de familia y amigos, tuve que aprender a ser mi propia red e apoyo, a reinventarme en un pais donde los sueños a veces se rompen. Esa experiencia me enseño resiliencia, me hizo valorar mi capacidad de empezar de nuevo y me mostró que soy mas fuerte de lo que creí.",
+  "Me ha dado muchas cosss, tanto negativas como positivas. Pero me ha hecho ser más empatica",
+  "Me ha hecho reflexionar de que verdaderamente es un hogar",
+  "Fue ub proceso complicado que me ayudo a entenderme mejor y a conectar con mis raices",
+  "Me ha hecho valorar el presente, disfrutar de las personas que están cerca de mí y que se preocupan por mí y me ha hecho estar más cerca de mis papás y mi hermano aún estando lejos.",
+  "i feel very blessed as an immigrant who was born in the US, but it's hard to see all the hate and division happening in this country where I moved to looking for opportunities (I was born here and moved when I was 2 to Peru where I was grew up and moved back to the US at 25)",
+  "Ser inmigrante me ha enseñado a encontrarme a mí mismo, para superar las dificultades",
+  "It has helped me develop resilience, to never loose hope even when every door is closed. Being an immigrant has given me a deeper understanding and respect for other cultures and their struggles in attaining the American Dream.",
+  "It has brought me closer to what I consider my essence and made me more appreciative of the culture that surrounded me growing up",
+  "Es un reto que nunca termina, siempre hay algo mas a lo que enfrentarse siendo inmigrante. Nunca me siento 100% segura de mi status",
+  "Me siento obligada a alejarme de mis raíces por miedo a ser juzgada y el rechazo",
+  "Definitivamente ha sido un antes y un después, un aprender y desaprender. Todo ha valido la pena si, pero ahora solo pensar que tendría que volver a pasar por esto debido al gobierno me da bastante ansiedad pero me sigue dando la misma ilusión que tenía cuando me venía a usa",
+  "Ha sido una época confusa y de adaptación, de duelo y alegrías",
+  "Being an immigrant has made me more emphatic towards the smaller voices. Even thought I'm no longer in my home country and more proud than ever to be from where I am from",
+  "El ser inmigrante me enseñó sobre empatía, sensibilidad y valentía en un solo momento",
+  "No seria quien fuera hoy sin las experiencias y obstaculos que sobrelleve durante mi proceso de imigracion. El nicel de adaptacion y resiliencia que aprendi a los 14 años, ha hecho que mi adultez sea mas facil.",
+  "Me ha hecho concluir que \"empezar de cero\" es una rutina mas a la que hay acostumbrarse para poder llevar los retos y obstaculos inesperados de una mejor manera",
+  "No a Audi facial pero a grades I cada minuto con fe y con mi familia uni da",
+  "Siento que después de unos años acá en USA me he consientizado de quién soy, que quiero, cómo lograr mis objetivos. Creo que después de todo el dolor que he atravesado he conseguido una motivación que no estoy seguro que habría obtenido si no hubiera sido por todas las dificultades anteriores.",
+  "El ser inmigrante se a convertido una parte fundamental de mi vida, de quien soy. No solo por la decisión que tomé al venirme, pero por la manera en la que soy percibida por mi entorno en este país. Antes de hablar, ya el \"otro\" esta listo para preguntarme de donde vengo, de donde salí. Es claro que no soy de aquí y aunque pueda ser aceptada, se que nunca voy a pertenecer y he aceptado que eso esta bien. No pertenecer en Estados Unidos también es una parte critica de la experiencia Americana, una parte agridulce de este \"melting pot.\" Algo que cada día se siente un poquito mas como aquello que se sentía mi \"hogar.\" Aquello que poco a poco, se siente cada día mas como un sueño borroso que nunca viví. Un sueño inalcanzable.",
+  "El migrar me ha enseñado lo mejor y lo peor de mi pais y como adaptarse sin perderse en una nueva cultura",
+  "It's definitely bittersweet. Por una parte aliviado de escapar de un comunismo dictatorial sin ninguna luz visible al final del túnel pero sin negar la cruda verdad actual de EEUU en donde el ser inmigrante se siente como un crimen de por sí.",
+  "Siento que ser immigrante en los estados unidos me ha enseñado humildad y respeto",
+  "Valoro mucho de donde vengo y en este país he crecido mucho profesionalmente",
+  "Ser inmigrante me ha hecho reconocer la capacidad de adaptación que tiene el ser humano y lo hermoso que es la diversidad, que todos venimos a servir de alguna manera y a recibir para seguir expandiendo nuestra búsqueda y despertar de conciencia sobre cosas que de no haber migrado no hubiera cuestionado antes.",
+  "Ser inmigrante en usa me ha ayudado a darme cuenta q gracias a dios yo no me crié en usa (y q desafortunadamente los paises mas avanzados tienden a tener siempre una cultura mas individualista y solitaria)"
+];
+
 module.exports = {
   emotionColors,
   reasonsForLeaving,
   emotionsDuringImmigration,
   gratitudeResponses,
   concernResponses,
-  copingMechanisms
+  copingMechanisms,
+  phase2Data,
+  identityReflections
 };
