@@ -25,6 +25,7 @@ html, body {
     font-family: 'Helvetica', 'Arial', sans-serif;
     font-weight: bold;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 @keyframes gradientShift {
@@ -35,13 +36,14 @@ html, body {
 
 #container {
     width: 100vw;
-    min-height: 100vh;
+    height: 100vh;  // Force container to viewport height
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 40px 20px;
     box-sizing: border-box;
     position: relative;
+    overflow-y: auto;  // Add scrolling to the container
 }
 
 #container::before {
