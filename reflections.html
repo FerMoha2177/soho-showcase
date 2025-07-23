@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immigration Journey - Identity Reflections</title>
+    <style>
+        /* GLOBAL RESET AND BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* FULL VIEWPORT LAYOUT */
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        /* CANVAS STYLING */
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #2c3e50, #3498db, #e74c3c, #f39c12);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        /* ANIMATED BACKGROUND GRADIENT */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* INSTRUCTION OVERLAY */
+        .instructions {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+        }
+        
+        /* QUESTION INDICATOR */
+        .question-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+            max-width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <!-- CANVAS ELEMENT FOR DRAWING -->
+    <canvas id="reflectionCanvas"></canvas>
+    
+    <!-- UI OVERLAYS -->
+    <div class="instructions">Click anywhere to see new reflections</div>
+    <div class="question-indicator" id="questionIndicator">Loading identity reflections...</div>
+
+    <script>
+        // =================================================================
+        // SURVEY DATA - IDENTITY REFLECTIONS FROM FINAL QUESTION
+        // =================================================================
+        
+        /**
+         * Identity reflections from the final survey question (ALL 28 ACTUAL RESPONSES):
+         * "Share a reflection on how being an immigrant has affected or shaped your identity"
+         * These are the complete, unedited responses from survey participants
+         */
+        const identityReflections = [
+            "Ser inmigrante, especialmente en estos momentos de incertidumbre, me ha hecho sentir aún más orgullo de ser latina. Sí, estoy preocupada, pero también me he dado cuenta de que frente al racismo, la indiferencia y la xenofobia, nosotros los latinos seguimos siendo especiales: cálidos, acogedores, alegres y, sobre todo, fuertes. Esta experiencia también ha despertado en mí una empatía y entendimiento aún más profundo por otros grupos étnicos y comunidades que han vivido bajo opresión por sus cultural. Siempre sentí empatía, pero nunca había comprendido su experiencia con tanta cercanía como ahora.",
+            
+            "Ha sido un reto pero que me ha hecho crecer en todo nivel personal",
+            
+            "Emigrar fue una decisión propia, pero hacerlo sola marco un antes y un despues en mi vida. Lejos de familia y amigos, tuve que aprender a ser mi propia red e apoyo, a reinventarme en un pais donde los sueños a veces se rompen. Esa experiencia me enseño resiliencia, me hizo valorar mi capacidad de empezar de nuevo y me mostró que soy mas fuerte de lo que creí.",
+            
+            "Me ha dado muchas cosss, tanto negativas como positivas. Pero me ha hecho ser más empatica",
+            
+            "Me ha hecho reflexionar de que verdaderamente es un hogar",
+            
+            "Fue ub proceso complicado que me ayudo a entenderme mejor y a conectar con mis raices",
+            
+            "Me ha hecho valorar el presente, disfrutar de las personas que están cerca de mí y que se preocupan por mí y me ha hecho estar más cerca de mis papás y mi hermano aún estando lejos.",
+            
+            "i feel very blessed as an immigrant who was born in the US, but it's hard to see all the hate and division happening in this country where I moved to looking for opportunities (I was born here and moved when I was 2 to Peru where I was grew up and moved back to the US at 25)",
+            
+            "Ser inmigrante me ha enseñado a encontrarme a mí mismo, para superar las dificultades",
+            
+            "It has helped me develop resilience, to never loose hope even when every door is closed. Being an immigrant has given me a deeper understanding and respect for other cultures and their struggles in attaining the American Dream.",
+            
+            "It has brought me closer to what I consider my essence and made me more appreciative of the culture that surrounded me growing up",
+            
+            "Es un reto que nunca termina, siempre hay algo mas a lo que enfrentarse siendo inmigrante. Nunca me siento 100% segura de mi status",
+            
+            "Me siento obligada a alejarme de mis raíces por miedo a ser juzgada y el rechazo",
+            
+            "Definitivamente ha sido un antes y un después, un aprender y desaprender. Todo ha valido la pena si, pero ahora solo pensar que tendría que volver a pasar por esto debido al gobierno me da bastante ansiedad pero me sigue dando la misma ilusión que tenía cuando me venía a usa",
+            
+            "Ha sido una época confusa y de adaptación, de duelo y alegrías",
+            
+            "Being an immigrant has made me more emphatic towards the smaller voices. Even thought I'm no longer in my home country and more proud than ever to be from where I am from",
+            
+            "El ser inmigrante me enseñó sobre empatía, sensibilidad y valentía en un solo momento",
+            
+            "No seria quien fuera hoy sin las experiencias y obstaculos que sobrelleve durante mi proceso de imigracion. El nicel de adaptacion y resiliencia que aprendi a los 14 años, ha hecho que mi adultez sea mas facil.",
+            
+            "Me ha hecho concluir que \"empezar de cero\" es una rutina mas a la que hay acostumbrarse para poder llevar los retos y obstaculos inesperados de una mejor manera",
+            
+            "No a Audi facial pero a grades I cada minuto con fe y con mi familia uni da",
+            
+            "Siento que después de unos años acá en USA me he consientizado de quién soy, que quiero, cómo lograr mis objetivos. Creo que después de todo el dolor que he atravesado he conseguido una motivación que no estoy seguro que habría obtenido si no hubiera sido por todas las dificultades anteriores.",
+            
+            "El ser inmigrante se a convertido una parte fundamental de mi vida, de quien soy. No solo por la decisión que tomé al venirme, pero por la manera en la que soy percibida por mi entorno en este país. Antes de hablar, ya el \"otro\" esta listo para preguntarme de donde vengo, de donde salí. Es claro que no soy de aquí y aunque pueda ser aceptada, se que nunca voy a pertenecer y he aceptado que eso esta bien. No pertenecer en Estados Unidos también es una parte critica de la experiencia Americana, una parte agridulce de este \"melting pot.\" Algo que cada día se siente un poquito mas como aquello que se sentía mi \"hogar.\" Aquello que poco a poco, se siente cada día mas como un sueño borroso que nunca viví. Un sueño inalcanzable.",
+            
+            "El migrar me ha enseñado lo mejor y lo peor de mi pais y como adaptarse sin perderse en una nueva cultura",
+            
+            "It's definitely bittersweet. Por una parte aliviado de escapar de un comunismo dictatorial sin ninguna luz visible al final del túnel pero sin negar la cruda verdad actual de EEUU en donde el ser inmigrante se siente como un crimen de por sí.",
+            
+            "Siento que ser immigrante en los estados unidos me ha enseñado humildad y respeto",
+            
+            "Valoro mucho de donde vengo y en este país he crecido mucho profesionalmente",
+            
+            "Ser inmigrante me ha hecho reconocer la capacidad de adaptación que tiene el ser humano y lo hermoso que es la diversidad, que todos venimos a servir de alguna manera y a recibir para seguir expandiendo nuestra búsqueda y despertar de conciencia sobre cosas que de no haber migrado no hubiera cuestionado antes.",
+            
+            "Ser inmigrante en usa me ha ayudado a darme cuenta q gracias a dios yo no me crié en usa (y q desafortunadamente los paises mas avanzados tienden a tener siempre una cultura mas individualista y solitaria)"
+        ];
+
+        // Question information for display
+        const questionInfo = {
+            spanish: "Comparte una reflexión del como el ser inmigrante ha afectado o moldeado tu identidad",
+            english: "Share a reflection on how being an immigrant has affected or shaped your identity"
+        };
+
+        // =================================================================
+        // CANVAS SETUP AND CONFIGURATION
+        // =================================================================
+        
+        const canvas = document.getElementById('reflectionCanvas');
+        const ctx = canvas.getContext('2d');
+        const questionIndicator = document.getElementById('questionIndicator');
+        
+        // Canvas state variables
+        let currentReflections = [];
+        let animationPhase = 0;
+        let lastClickTime = 0;
+        let fadeOpacity = 1;
+        let currentColorIndices = [0, 0, 0]; // Track current color index for each card
+        
+        // Color schemes based on survey data - top 3 colors for each stage
+        const stageColorSchemes = [
+            // Stage 1: The Decision - Blue, Green, Yellow
+            [
+                ['rgba(33, 150, 243, 0.4)', 'rgba(33, 150, 243, 0.1)'], // Blue
+                ['rgba(76, 175, 80, 0.4)', 'rgba(76, 175, 80, 0.1)'],   // Green
+                ['rgba(255, 193, 7, 0.4)', 'rgba(255, 193, 7, 0.1)']    // Yellow
+            ],
+            // Stage 2: New Home - Blue, Green, Orange
+            [
+                ['rgba(33, 150, 243, 0.4)', 'rgba(33, 150, 243, 0.1)'], // Blue
+                ['rgba(76, 175, 80, 0.4)', 'rgba(76, 175, 80, 0.1)'],   // Green
+                ['rgba(255, 152, 0, 0.4)', 'rgba(255, 152, 0, 0.1)']    // Orange
+            ],
+            // Stage 3: Current State - White, Blue, Purple
+            [
+                ['rgba(255, 255, 255, 0.4)', 'rgba(255, 255, 255, 0.1)'], // White
+                ['rgba(33, 150, 243, 0.4)', 'rgba(33, 150, 243, 0.1)'],   // Blue
+                ['rgba(156, 39, 176, 0.4)', 'rgba(156, 39, 176, 0.1)']    // Purple
+            ]
+        ];
+        
+        /**
+         * Resize canvas to fill the viewport
+         */
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        // Initial setup and window resize handler
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // =================================================================
+        // RANDOM SELECTION FUNCTIONS
+        // =================================================================
+        
+        /**
+         * Shuffle array using Fisher-Yates algorithm
+         * @param {Array} array - Array to shuffle
+         * @returns {Array} Shuffled array
+         */
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        /**
+         * Select three random identity reflections and update colors
+         * @returns {Array} Array of three reflection objects
+         */
+        function selectRandomReflections() {
+            const reflections = [];
+            
+            // Shuffle all identity reflections and pick 3
+            const shuffledReflections = shuffleArray(identityReflections);
+            const selectedReflections = shuffledReflections.slice(0, 3);
+            
+            // Update color indices to next color for each card
+            currentColorIndices = currentColorIndices.map((currentIndex, cardIndex) => {
+                const stageColors = stageColorSchemes[cardIndex];
+                return (currentIndex + 1) % stageColors.length;
+            });
+            
+            selectedReflections.forEach((reflection, index) => {
+                reflections.push({
+                    text: reflection,
+                    x: 0, // Will be set during animation
+                    y: 0, // Will be set during animation
+                    targetY: 0, // Target position for animation
+                    currentY: 0, // Current animated position
+                    opacity: 0, // Start invisible
+                    targetOpacity: 1, // Target opacity
+                    index: index // For positioning and coloring
+                });
+            });
+            
+            return reflections;
+        }
+        
+        // =================================================================
+        // TEXT RENDERING FUNCTIONS
+        // =================================================================
+        
+        /**
+         * Wrap text to fit within specified width
+         * @param {string} text - Text to wrap
+         * @param {number} maxWidth - Maximum width in pixels
+         * @param {CanvasRenderingContext2D} context - Canvas context
+         * @returns {Array} Array of text lines
+         */
+        function wrapText(text, maxWidth, context) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+            
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const width = context.measureText(currentLine + ' ' + word).width;
+                if (width < maxWidth) {
+                    currentLine += ' ' + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+        
+        /**
+         * Calculate the required height for a text block
+         * @param {string} text - Text to measure
+         * @param {number} textWidth - Available width for text
+         * @param {CanvasRenderingContext2D} context - Canvas context
+         * @returns {number} Required height in pixels
+         */
+        function calculateTextHeight(text, textWidth, context) {
+            context.font = '18px Helvetica, Arial, sans-serif';
+            const lines = wrapText(text, textWidth, context);
+            const lineHeight = 22;
+            const headerHeight = 80; // Space for title and subtitle
+            const padding = 40; // Bottom padding
+            
+            return headerHeight + (lines.length * lineHeight) + padding;
+        }
+
+        /**
+         * Get current color scheme for a card based on stored color index
+         * @param {number} cardIndex - Index of the card (0, 1, or 2)
+         * @returns {Array} Color gradient array [start, end]
+         */
+        function getCurrentColorScheme(cardIndex) {
+            const stageColors = stageColorSchemes[cardIndex];
+            const colorIndex = currentColorIndices[cardIndex];
+            return stageColors[colorIndex];
+        }
+
+        /**
+         * Draw a reflection card with identity text - dynamic height and cycling colors
+         * @param {Object} reflection - Reflection object with text and position
+         * @param {number} index - Index for positioning (0, 1, or 2)
+         */
+        function drawReflection(reflection, index) {
+            const cardWidth = Math.min(canvas.width * 0.85, 600);
+            const textWidth = cardWidth - 50; // Account for padding
+            
+            // Calculate required height based on text content
+            const requiredHeight = calculateTextHeight(reflection.text, textWidth, ctx);
+            const cardHeight = Math.max(150, requiredHeight); // Minimum height of 150px
+            
+            const margin = 20;
+            
+            // Calculate positions for three cards with dynamic spacing
+            const availableHeight = canvas.height - (margin * 2);
+            let totalRequiredHeight = 0;
+            
+            // Calculate total height needed for all three cards
+            currentReflections.forEach(r => {
+                const rHeight = calculateTextHeight(r.text, textWidth, ctx);
+                totalRequiredHeight += Math.max(150, rHeight);
+            });
+            
+            // Add spacing between cards
+            const cardSpacing = Math.max(15, (availableHeight - totalRequiredHeight) / 4); // 4 gaps (top, between cards, bottom)
+            
+            // Calculate Y position based on previous cards
+            let currentY = margin + cardSpacing;
+            for (let i = 0; i < index; i++) {
+                const prevHeight = calculateTextHeight(currentReflections[i].text, textWidth, ctx);
+                currentY += Math.max(150, prevHeight) + cardSpacing;
+            }
+            
+            const x = (canvas.width - cardWidth) / 2;
+            const targetY = currentY;
+            
+            // Animate Y position
+            reflection.targetY = targetY;
+            reflection.currentY += (reflection.targetY - reflection.currentY) * 0.1;
+            reflection.opacity += (reflection.targetOpacity - reflection.opacity) * 0.05;
+            
+            // Draw card background with cycling colors
+            ctx.save();
+            ctx.globalAlpha = reflection.opacity * 0.9;
+            
+            // Get current color scheme for this card based on its stage
+            const currentColors = getCurrentColorScheme(index);
+            const gradient = ctx.createLinearGradient(x, reflection.currentY, x + cardWidth, reflection.currentY + cardHeight);
+            gradient.addColorStop(0, currentColors[0]);
+            gradient.addColorStop(1, currentColors[1]);
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x, reflection.currentY, cardWidth, cardHeight);
+            
+            // Border with matching color theme
+            const borderOpacity = index === 0 ? 0.6 : index === 1 ? 0.5 : 0.7; // Adjust border opacity for white
+            ctx.strokeStyle = `rgba(255, 255, 255, ${borderOpacity})`;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, reflection.currentY, cardWidth, cardHeight);
+            
+            // Question label at top
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = 'bold 16px Helvetica, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Identity Reflection', x + cardWidth / 2, reflection.currentY + 30);
+            
+            // Stage indicator based on position
+            const stageLabels = ['Stage 1: The Decision', 'Stage 2: New Home', 'Stage 3: Current State'];
+            ctx.font = '12px Helvetica, Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.fillText(stageLabels[index], x + cardWidth / 2, reflection.currentY + 50);
+            
+            // Main reflection text - 18px and centered
+            const textX = x + 25;
+            const textY = reflection.currentY + 80;
+            const lineHeight = 22; // For 18px font
+            
+            // Set font for reflection text - 18px and center-aligned
+            ctx.font = '18px Helvetica, Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.textAlign = 'center'; // Center the text
+            
+            // Wrap and display ALL the reflection text (no truncation)
+            const textLines = wrapText(reflection.text, textWidth, ctx);
+            
+            // Display all lines since we calculated the height to fit them
+            textLines.forEach((line, lineIndex) => {
+                // Center each line horizontally
+                ctx.fillText(line, x + cardWidth / 2, textY + (lineIndex * lineHeight));
+            });
+            
+            // Card number indicator
+            ctx.font = 'bold 12px Helvetica, Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.textAlign = 'right';
+            ctx.fillText(`${index + 1}/3`, x + cardWidth - 15, reflection.currentY + 25);
+            
+            ctx.restore();
+        }
+        
+        // =================================================================
+        // ANIMATION AND RENDERING
+        // =================================================================
+        
+        /**
+         * Main render loop
+         */
+        function render() {
+            // Clear canvas with slight trail effect
+            ctx.fillStyle = 'rgba(26, 26, 26, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Check if content is taller than screen
+            if (currentReflections.length > 0) {
+                let totalContentHeight = 40; // Top margin
+                const cardWidth = Math.min(canvas.width * 0.85, 600);
+                const textWidth = cardWidth - 50;
+                
+                currentReflections.forEach(reflection => {
+                    const requiredHeight = calculateTextHeight(reflection.text, textWidth, ctx);
+                    totalContentHeight += Math.max(150, requiredHeight) + 15; // Add spacing
+                });
+                
+                // If content is too tall, show a scroll indicator
+                if (totalContentHeight > canvas.height) {
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.font = '14px Helvetica, Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Content adapted to fit screen', canvas.width / 2, 20);
+                    ctx.restore();
+                }
+            }
+            
+            // Draw current reflections
+            currentReflections.forEach((reflection, index) => {
+                drawReflection(reflection, index);
+            });
+            
+            // Continue animation
+            requestAnimationFrame(render);
+        }
+        
+        /**
+         * Load new random reflections with fade transition
+         */
+        function loadNewReflections() {
+            // Prevent rapid clicking
+            const currentTime = Date.now();
+            if (currentTime - lastClickTime < 1000) return;
+            lastClickTime = currentTime;
+            
+            // Fade out current reflections
+            currentReflections.forEach(reflection => {
+                reflection.targetOpacity = 0;
+            });
+            
+            // Load new reflections after fade
+            setTimeout(() => {
+                currentReflections = selectRandomReflections();
+                
+                // Set initial positions (off-screen)
+                currentReflections.forEach((reflection, index) => {
+                    reflection.currentY = -200; // Start above screen
+                    reflection.opacity = 0;
+                });
+                
+                // Update question indicator
+                questionIndicator.textContent = "Mostrando reflexiones sobre identidad • Showing identity reflections";
+            }, 500);
+        }
+        
+        // =================================================================
+        // EVENT HANDLERS AND INITIALIZATION
+        // =================================================================
+        
+        /**
+         * Handle click events to load new reflections
+         */
+        canvas.addEventListener('click', loadNewReflections);
+        
+        /**
+         * Handle keyboard events
+         */
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space' || event.code === 'Enter') {
+                event.preventDefault();
+                loadNewReflections();
+            }
+        });
+        
+        /**
+         * Initialize the application
+         */
+        function init() {
+            // Load initial reflections
+            loadNewReflections();
+            
+            // Start render loop
+            render();
+            
+            // Update instructions after initial load
+            setTimeout(() => {
+                questionIndicator.textContent = "Click anywhere or press Space to see new reflections";
+            }, 2000);
+        }
+        
+        // Start the application when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
