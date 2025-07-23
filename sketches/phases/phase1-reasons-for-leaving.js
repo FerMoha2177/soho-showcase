@@ -1,10 +1,10 @@
 // phases/phase1-reasons-for-leaving.js
 const { createContainer } = require('../containers/container-system');
-const { reasonsForLeaving, emotionsDuringImmigration } = require('../data/survey-data');
+const { reasonsForLeaving, emotionsDuringImmigration, helpFactors } = require('../data/survey-data');
 const { ReasonBubble, EmotionBubble, BubblePhysics } = require('../physics/bubble');
 
-class Phase1 {
-  constructor(width, height) {
+class Phase1 
+  constructor(width, height);{
     this.width = width;
     this.height = height;
     this.container = createContainer('popcorn-maker', width, height);
@@ -12,7 +12,8 @@ class Phase1 {
     // Bubble management
     this.reasonBubbles = [];
     this.emotionBubbles = [];
-    
+    this.helpBubbles = [];
+
     // Timing and state
     this.nextBubbleTime = 1.0;
     this.bubbleIndex = 0;
@@ -20,10 +21,12 @@ class Phase1 {
     
     // Phase states
     this.reasonsComplete = false;
-    this.emotionsTriggered = false;
+    this.emotionsComplete = false;
     this.emotionBubbleIndex = 0;
     this.nextEmotionTime = 0;
-    
+    this.helpTriggered = false;
+    this.helpBubbleIndex = 0;
+
     console.log('Phase 1 initialized with cleaned bubble system');
     
     // Add mouse click listener
@@ -97,17 +100,30 @@ class Phase1 {
         console.log(`Added emotion bubble: ${emotionData.word}`);
       }
     }
+
+    // Add help bubbles (triggered by mouse click)
+    if (this.helpTriggered && time > this.nextEmotionTime) {
+      if (this.helpBubbleIndex < helpFactors.length) {
+        const helpData = helpFactors[this.helpBubbleIndex];
+        this.helpBubbles.push(this.createEmotionBubble(emotionData));
+        this.helpBubbleIndex++;
+        this.nextHelpTime = time + 0.8 + Math.random() * 0.4;
+        console.log(`Added helpt bubble: ${helpData.word}`);
+      }
+    }
     
     // Update all bubbles using their own update methods
     this.reasonBubbles.forEach(bubble => bubble.update(deltaTime));
     this.emotionBubbles.forEach(bubble => bubble.update(deltaTime));
+    this.helpBubbles.forEach(bubble => bubble.update(deltaTime));
     
     // Remove destroyed bubbles (those that finished popping)
     this.reasonBubbles = this.reasonBubbles.filter(bubble => !bubble.isDestroyed());
     this.emotionBubbles = this.emotionBubbles.filter(bubble => !bubble.isDestroyed());
-    
+    this.helpBubbles = this.helpBubbles.filter(bubble => !bubble.isDestroyed())
+
     // Handle collisions using BubblePhysics
-    const allBubbles = [...this.reasonBubbles, ...this.emotionBubbles];
+    const allBubbles = [...this.reasonBubbles, ...this.emotionBubbles, ...this.helpBubbles];
     BubblePhysics.checkCollisions(allBubbles);
     
     // Clear with dark background
@@ -120,15 +136,15 @@ class Phase1 {
     // Draw all bubbles using their own render methods
     this.reasonBubbles.forEach(bubble => bubble.render(context, time));
     this.emotionBubbles.forEach(bubble => bubble.render(context, time));
-    
+    this.helpBubbles.forEach(bubble => bubble.render(context, time))
     // UI overlay
     this.renderUI(context, width, height);
   }
   
-  renderUI(context, width, height) {
+  renderUI(context, width, height) 
     // Stats
     context.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    context.font = '16px Arial';
+    context.font = '16px Helvetica';
     context.textAlign = 'left';
     context.fillText(`Reason Bubbles: ${this.reasonBubbles.length}`, 20, 30);
     context.fillText(`Emotion Bubbles: ${this.emotionBubbles.length}`, 20, 50);
@@ -136,19 +152,19 @@ class Phase1 {
     
     // Title
     context.fillStyle = 'rgba(255, 255, 255, 0.9)';
-    context.font = 'bold 28px Arial';
+    context.font = 'bold 28px Helvetica';
     context.textAlign = 'center';
     context.fillText('Part 1: The Decision - Reasons for Leaving & Emotions', width / 2, 40);
     
     // Interaction prompts
     if (this.reasonsComplete && !this.emotionsTriggered) {
       context.fillStyle = '#FFD700';
-      context.font = 'bold 32px Arial';
+      context.font = 'bold 32px Helvetica';
       context.textAlign = 'center';
       context.fillText('🖱️ CLICK TO TRIGGER EMOTIONS', width / 2, height - 60);
     } else if (this.emotionsTriggered) {
       context.fillStyle = '#90EE90';
-      context.font = 'bold 24px Arial';
+      context.font = 'bold 24px Helvetica';
       context.textAlign = 'center';
       context.fillText('✨ Emotions Activated!', width / 2, height - 60);
     }
@@ -156,18 +172,18 @@ class Phase1 {
     // Debug buttons (optional - could be removed for production)
     if (this.reasonBubbles.length > 0) {
       context.fillStyle = 'rgba(255, 0, 0, 0.7)';
-      context.font = '14px Arial';
+      context.font = '14px Helvetica';
       context.textAlign = 'right';
       context.fillText('Press R to purge reasons', width - 20, height - 100);
     }
     
     if (this.emotionBubbles.length > 0) {
       context.fillStyle = 'rgba(0, 255, 0, 0.7)';
-      context.font = '14px Arial';
+      context.font = '14px Helvetica';
       context.textAlign = 'right';
       context.fillText('Press E to purge emotions', width - 20, height - 80);
     }
-  }
+  
   
   // Handle keyboard inputs for debugging
   handleKeyPress(key) {
@@ -190,6 +206,6 @@ class Phase1 {
       this.cleanup();
     }
   }
-}
+
 
 module.exports = Phase1;

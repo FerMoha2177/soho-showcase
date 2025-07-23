@@ -1,5 +1,5 @@
 // physics/bubble.js - Enhanced with hierarchy
-const { reasonsForLeaving, emotionsDuringImmigration } = require('../data/survey-data');
+const { reasonsForLeaving, emotionsDuringImmigration, helpingFactors } = require('../data/survey-data');
 
 // Base Bubble Class
 class Bubble {
@@ -170,7 +170,7 @@ class ReasonBubble extends Bubble {
     // Text
     if (this.currentRadius > 20 && this.age > this.spawnTime) {
       context.fillStyle = '#CCCCCC';
-      context.font = `bold ${Math.min(40, this.currentRadius / 4)}px Arial`;
+      context.font = `bold ${Math.min(40, this.currentRadius / 4)}px Helvetica`;
       context.textAlign = 'center';
       context.textBaseline = 'middle';
       context.fillText(this.word, this.x, this.y);
@@ -265,7 +265,102 @@ class EmotionBubble extends Bubble {
     // Text
     if (this.currentRadius > 20 && this.age > this.spawnTime) {
       context.fillStyle = '#FFFFFF';
-      context.font = `bold ${Math.min(40, this.currentRadius / 4)}px Arial`;
+      context.font = `bold ${Math.min(40, this.currentRadius / 4)}px Helvetica`;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(this.word, this.x, this.y);
+    }
+  }
+}
+
+// Help Bubble (colorful, representing feelings)
+class HelpBubble extends Bubble {
+  constructor(data, container) {
+    super(data, container);
+    this.type = 'Tools';
+    this.baseColor = data.color;
+    this.color = this.hexToRgb(data.color);
+    this.gravity = 0.3;
+    this.friction = 0.99;
+    this.spawnTime = 0.25;
+  }
+  
+  calculateRadius(responses) {
+    const maxResponses = Math.max(...helpingFactors.map(w => w.responses));
+    return 60 + (responses / maxResponses) * 120;
+  }
+  
+  render(context, time) {
+    if (this.currentRadius <= 0) return;
+    
+    const { r, g, b } = this.color;
+    
+    // Beautiful animated gradient with survey colors
+    const gradient = context.createRadialGradient(
+      this.x - this.currentRadius * 0.4,
+      this.y - this.currentRadius * 0.4,
+      0,
+      this.x,
+      this.y,
+      this.currentRadius
+    );
+    
+    // Create color variations
+    const animationTime = time + this.animationOffset;
+    const wave = Math.sin(animationTime * 2) * 0.2 + 0.8;
+    
+    const color1 = this.baseColor;
+    const color2 = `rgb(${Math.floor(r * 0.6)}, ${Math.floor(g * 0.6)}, ${Math.floor(b * 0.6)})`;
+    const color3 = `rgba(${Math.floor(r * 1.3)}, ${Math.floor(g * 1.3)}, ${Math.floor(b * 1.3)}, 0.8)`;
+    
+    gradient.addColorStop(0, color3); // Bright center
+    gradient.addColorStop(0.5, color1); // Main survey color
+    gradient.addColorStop(1, color2); // Darker edge
+    
+    // Draw main bubble
+    context.beginPath();
+    context.arc(this.x, this.y, this.currentRadius, 0, Math.PI * 2);
+    context.fillStyle = gradient;
+    context.fill();
+    
+    // Animated outline with survey color
+    const outlineAlpha = Math.sin(animationTime * 3) * 0.3 + 0.7;
+    context.beginPath();
+    context.arc(this.x, this.y, this.currentRadius, 0, Math.PI * 2);
+    context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${outlineAlpha})`;
+    context.lineWidth = 3;
+    context.stroke();
+    
+    // Bright highlight
+    context.beginPath();
+    context.arc(
+      this.x - this.currentRadius * 0.4,
+      this.y - this.currentRadius * 0.4,
+      this.currentRadius * 0.2,
+      0, Math.PI * 2
+    );
+    context.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    context.fill();
+    
+    // Sparkle effects for emotions
+    if (this.age > this.spawnTime) {
+      for (let i = 0; i < 3; i++) {
+        const angle = time * 2 + this.animationOffset + i * (Math.PI * 2 / 3);
+        const sparkleX = this.x + Math.cos(angle) * this.currentRadius * 0.7;
+        const sparkleY = this.y + Math.sin(angle) * this.currentRadius * 0.7;
+        const sparkleAlpha = Math.sin(time * 4 + i) * 0.5 + 0.5;
+        
+        context.fillStyle = `rgba(255, 255, 255, ${sparkleAlpha * 0.6})`;
+        context.beginPath();
+        context.arc(sparkleX, sparkleY, 3, 0, Math.PI * 2);
+        context.fill();
+      }
+    }
+    
+    // Text
+    if (this.currentRadius > 20 && this.age > this.spawnTime) {
+      context.fillStyle = '#FFFFFF';
+      context.font = `bold ${Math.min(40, this.currentRadius / 4)}px Helvetica`;
       context.textAlign = 'center';
       context.textBaseline = 'middle';
       context.fillText(this.word, this.x, this.y);
@@ -328,5 +423,6 @@ module.exports = {
   Bubble,
   ReasonBubble,
   EmotionBubble,
+  HelpBubble,
   BubblePhysics
 };

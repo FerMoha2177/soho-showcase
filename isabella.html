@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immigration Journey - Phase 2: New Home</title>
+    <style>
+        /* GLOBAL RESET AND BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* FULL VIEWPORT LAYOUT WITH ANIMATED GRADIENT BACKGROUND */
+        html, body {
+            width: 100%;
+            height: 100%;
+            /* Animated gradient using survey colors from Phase 1 */
+            background: linear-gradient(135deg, 
+                #E84A8A 0%,    /* Pink */
+                #0067A3 15%,   /* Blue */
+                #00A651 30%,   /* Green */
+                #FF6900 45%,   /* Orange */
+                #663399 60%,   /* Purple */
+                #F7F7F7 75%,   /* White */
+                #2B2B2B 90%,   /* Black */
+                #FFCC00 100%   /* Yellow */
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            color: #ffffff;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-weight: bold;
+            overflow-x: hidden;
+        }
+        
+        /* BACKGROUND GRADIENT ANIMATION */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* MAIN CONTAINER FOR ALL CONTENT */
+        #container {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        /* DARK OVERLAY FOR TEXT READABILITY */
+        #container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+        }
+        
+        /* MAIN TITLE STYLING WITH RESPONSIVE FONT SIZE */
+        .title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem); /* Responsive: min 1.8rem, preferred 4vw, max 2.5rem */
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards; /* Fade in animation */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+        
+        /* SUBTITLE STYLING */
+        .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.3s forwards; /* Delayed fade in */
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+        }
+        
+        /* LOADING MESSAGE STYLING */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+            z-index: 1000;
+        }
+        
+        /* CONTAINER FOR EACH SURVEY QUESTION SECTION */
+        .question-section {
+            width: 100%;
+            max-width: 1600px;
+            margin-bottom: 100px; /* Space between sections */
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.6s forwards;
+        }
+        
+        /* QUESTION TITLE FOR EACH SECTION */
+        .question-title {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: bold;
+            margin-bottom: 50px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+        }
+        
+        /* WAVE CONTAINER - 16:9 ASPECT RATIO CONTAINER FOR PARTICLES */
+        .wave-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio (9/16 = 0.5625) */
+            overflow: visible; /* Allow particles to move outside container */
+            background: rgba(255, 255, 255, 0.02); /* Subtle glass effect */
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); /* Glass morphism effect */
+        }
+        
+        /* INNER CONTAINER FOR WAVE ANIMATION */
+        .wave-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* INDIVIDUAL PARTICLE/BUBBLE STYLING */
+        .particle {
+            position: absolute;
+            border-radius: 50%; /* Make it circular */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* Start invisible */
+            transform: scale(0); /* Start scaled down */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            z-index: 10;
+        }
+        
+        /* PARTICLE HOVER EFFECTS */
+        .particle:hover {
+            transform: scale(1.15); /* Grow on hover */
+            z-index: 100; /* Bring to front */
+            filter: brightness(1.1) saturate(1.2); /* Enhance colors */
+        }
+        
+        /* TEXT INSIDE PARTICLES */
+        .particle-text {
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            max-width: 140px;
+            line-height: 1.3;
+            text-transform: uppercase;
+            text-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.2),
+                0 1px 0 rgba(0, 0, 0, 0.8);
+            pointer-events: none; /* Don't interfere with particle clicks */
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+        
+        /* TRAVELING WHITE PARTICLE THAT INTERACTS WITH OTHERS */
+        .traveling-particle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6));
+            box-shadow: 
+                0 0 20px rgba(255, 255, 255, 0.8),  /* Inner glow */
+                0 0 40px rgba(255, 255, 255, 0.6),  /* Medium glow */
+                0 0 60px rgba(255, 255, 255, 0.4),  /* Outer glow */
+                0 4px 16px rgba(255, 255, 255, 0.3); /* Drop shadow */
+            z-index: 1000; /* Always on top */
+            pointer-events: none; /* Don't interfere with clicks */
+        }
+        
+        /* FADE IN ANIMATION FOR ELEMENTS */
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* PARTICLE APPEARANCE ANIMATION */
+        @keyframes particleAppear {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* PARTICLE BURST ANIMATION WHEN CLICKED */
+        @keyframes particleBurst {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.5); /* Expand */
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0); /* Disappear */
+            }
+        }
+        
+        /* BACK BUTTON TO RETURN TO PHASE 1 */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        /* BACK BUTTON HOVER EFFECT */
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- NAVIGATION BUTTON -->
+        <button class="back-button" onclick="goBackToPhase1()">← Phase 1</button>
+        
+        <!-- MAIN TITLE AND SUBTITLE -->
+        <h1 class="title">The Immigrant's Journey</h1>
+        <p class="subtitle">Part 2: New Home - Real Survey Data (32 Participants)</p>
+        
+        <!-- LOADING MESSAGE (HIDDEN AFTER DATA LOADS) -->
+        <div id="loading" class="loading">Loading real survey data from 32 participants...</div>
+        
+        <!-- CONTAINER FOR ALL QUESTION SECTIONS -->
+        <div id="questions-container"></div>
+    </div>
+
+    <script>
+        // =================================================================
+        // NAVIGATION FUNCTIONS
+        // =================================================================
+        
+        /**
+         * Function to navigate back to Phase 1
+         * Supports multiple integration methods
+         */
+        function goBackToPhase1() {
+            // Method 1: If embedded in iframe, send message to parent
+            if (window.parent) {
+                window.parent.postMessage({ action: 'showPhase1' }, '*');
+            } else {
+                // Method 2: Use browser history navigation
+                window.history.back();
+            }
+        }
+        
+        // =================================================================
+        // UTILITY FUNCTIONS
+        // =================================================================
+        
+        /**
+         * Simple seeded random number generator for consistent results
+         * @param {number} seed - Seed value for reproducible randomness
+         * @returns {number} Random number between 0 and 1
+         */
+        function seededRandom(seed) {
+            const x = Math.sin(seed) * 10000;
+            return x - Math.floor(x);
+        }
+
+        // =================================================================
+        // SURVEY DATA - EMBEDDED FOR GITHUB COMPATIBILITY
+        // =================================================================
+        
+        /**
+         * Survey data for Phase 2: New Home
+         * Contains three main questions about immigrant experiences in the US
+         * Data extracted from actual CSV responses
+         */
+        const surveyData = {
+            questions: [
+                {
+                    name: 'Internal Battles',
+                    fullQuestion: 'What major internal battles did you face when you arrived to the United States?',
+                    data: {
+                        'Ansiedad /// Anxiety': 22,
+                        'Soledad /// Loneliness': 17,
+                        'Desgaste Mental /// Burnout': 15,
+                        'Miedo /// Fear': 13,
+                        'Tristeza /// Sadness': 11,
+                        'Insensibilidad /// Numbness': 5,
+                        'Confusión /// Confusion': 5,
+                        'Culpa /// Guilt': 4,
+                        'Decepción /// Disappointment': 2,
+                        'Negación /// Denial': 2
+                    }
+                },
+                {
+                    name: 'What Helped Overcome',
+                    fullQuestion: 'What helped you overcome the internal battles you experienced?',
+                    data: {
+                        'Familia o Amigos /// Family or Friends': 27,
+                        'Nuevas Opportunidades /// New Opportunities': 18,
+                        'El sentir seguridad /// To Feel Safety': 14,
+                        'Sueños /// Dreams': 12,
+                        'Fe /// Faith': 8,
+                        'Ilusiones /// Hopes': 7,
+                        'Arte /// Art': 7,
+                        'La música /// Music': 7,
+                        'Nuevos Amigos /// New Friends': 6,
+                        'La Comunidad /// Community': 4,
+                        'Compartir con otros inmigrantes /// Share with other immigrants': 2,
+                        'Disfrutar de la libertad de expresión /// Enjoy freedom of speech': 1
+                    }
+                },
+                {
+                    name: 'Reasons to Choose US',
+                    fullQuestion: 'What were the main reasons that inspired you to choose the United States as your "new home"?',
+                    data: {
+                        'Las oportunidades de Trabajo /// The Opportunities to work': 20,
+                        'La seguridad y establidad del pais /// The safety and stability of the country': 19,
+                        'Acceso a educación de calidad /// Access to world-class education': 11,
+                        '"El Sueño Americano" /// "The American Dream"': 10,
+                        'Su sistema democratico /// Its democratic system': 7,
+                        'Acceso a un proceso sencillo para conseguir residencia legal /// Access to a straight forward process to achieve permanent residency': 5,
+                        'La diversidad y gran población de inmigrantes /// The diversity and strong immigrant population': 4,
+                        'Confianza en su sistema judicial /// Trust in its justice system': 3,
+                        'Familia /// Family': 4 // Combined similar family responses
+                    }
+                }
+            ],
+            // Color distribution based on Phase 2 survey responses about "New Home" state of mind
+            // Blue is most common (9), followed by Green (8), Orange (5), etc.
+            colorDistribution: [
+                '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', // Blue (9 responses)
+                '#4CAF50', '#4CAF50', '#4CAF50', '#4CAF50', '#4CAF50', '#4CAF50', '#4CAF50', '#4CAF50', // Green (8 responses)
+                '#FF9800', '#FF9800', '#FF9800', '#FF9800', '#FF9800', // Orange (5 responses)
+                '#E91E63', '#E91E63', '#E91E63', // Pink (3 responses)
+                '#9C27B0', '#9C27B0', '#9C27B0', // Purple (3 responses)
+                '#FAFAFA', '#FAFAFA', // White (2 responses)
+                '#424242', // Black (1 response)
+                '#FFC107'  // Yellow (1 response)
+            ]
+        };
+
+        // =================================================================
+        // COLOR MANIPULATION FUNCTIONS
+        // =================================================================
+
+        /**
+         * Convert hex color to HSL (Hue, Saturation, Lightness)
+         * @param {string} hex - Hex color code (e.g., "#FF0000")
+         * @returns {Array} [hue, saturation, lightness] values
+         */
+        function hexToHsl(hex) {
+            // Convert hex to RGB values (0-1 range)
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2; // Lightness
+
+            if (max === min) {
+                h = s = 0; // Achromatic (no color)
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+
+            return [h * 360, s * 100, l * 100];
+        }
+
+        /**
+         * Convert HSL back to hex color
+         * @param {number} h - Hue (0-360)
+         * @param {number} s - Saturation (0-100)
+         * @param {number} l - Lightness (0-100)
+         * @returns {string} Hex color code
+         */
+        function hslToHex(h, s, l) {
+            h = h / 360;
+            s = s / 100;
+            l = l / 100;
+
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            const r = hue2rgb(p, q, h + 1/3);
+            const g = hue2rgb(p, q, h);
+            const b = hue2rgb(p, q, h - 1/3);
+
+            const toHex = (c) => {
+                const hex = Math.round(c * 255).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        /**
+         * Enhance color by increasing saturation and brightness
+         * @param {string} hexColor - Original hex color
+         * @param {number} saturationIncrease - Amount to increase saturation (default: 40)
+         * @param {number} lightnessIncrease - Amount to increase lightness (default: 8)
+         * @returns {string} Enhanced hex color
+         */
+        function enhanceColor(hexColor, saturationIncrease = 40, lightnessIncrease = 8) {
+            const [h, s, l] = hexToHsl(hexColor);
+            const newSaturation = Math.min(100, s + saturationIncrease);
+            const newLightness = Math.min(85, l + lightnessIncrease);
+            return hslToHex(h, newSaturation, newLightness);
+        }
+        
+        // =================================================================
+        // MAIN VISUALIZATION CREATION
+        // =================================================================
+        
+        /**
+         * Create the main particle visualization
+         * @param {Object} data - Survey data containing questions and color distribution
+         */
+        function createVisualization(data) {
+            const container = document.getElementById('questions-container');
+            const loading = document.getElementById('loading');
+            
+            // Hide loading message
+            loading.style.display = 'none';
+            
+            // Create a visualization section for each survey question
+            data.questions.forEach((question, qIndex) => {
+                // Create section container
+                const section = document.createElement('div');
+                section.className = 'question-section';
+                
+                // Add question title
+                const title = document.createElement('h2');
+                title.className = 'question-title';
+                title.textContent = question.fullQuestion;
+                section.appendChild(title);
+                
+                // Create wave container (16:9 aspect ratio)
+                const waveContainer = document.createElement('div');
+                waveContainer.className = 'wave-container';
+                
+                const waveInner = document.createElement('div');
+                waveInner.className = 'wave-inner';
+                waveContainer.appendChild(waveInner);
+                
+                // Sort answers by frequency (most common first)
+                const sortedAnswers = Object.entries(question.data).sort((a, b) => b[1] - a[1]);
+                const allParticles = []; // Store all particles for interaction
+                
+                // =================================================================
+                // CREATE THREE WAVES OF PARTICLES
+                // =================================================================
+                // Wave 0 & 2: English text
+                // Wave 1: Spanish text
+                
+                for (let waveIndex = 0; waveIndex < 3; waveIndex++) {
+                    // Shuffle answers for visual variety while maintaining data integrity
+                    const shuffledAnswers = [...sortedAnswers];
+                    for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+                        const j = Math.floor(seededRandom(qIndex * 1000 + waveIndex * 100 + i) * (i + 1));
+                        [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]];
+                    }
+                    
+                    shuffledAnswers.forEach(([answer, count], shuffledIndex) => {
+                        // Create particle element
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        
+                        // Find original position for timing purposes
+                        const originalIndex = sortedAnswers.findIndex(([a]) => a === answer);
+                        const particleSeed = qIndex * 1000 + waveIndex * 100 + shuffledIndex;
+                        
+                        // =================================================================
+                        // CALCULATE PARTICLE SIZE BASED ON RESPONSE COUNT
+                        // =================================================================
+                        const maxCount = Math.max(...Object.values(question.data));
+                        const waveScaleFactor = waveIndex === 0 ? 1 : waveIndex === 1 ? 0.85 : 0.7; // Different sizes for each wave
+                        const minSize = 40 * waveScaleFactor;
+                        const maxSize = 180 * waveScaleFactor;
+                        const sizeRatio = count / maxCount;
+                        // Use exponential scaling for more dramatic size differences
+                        const exponentialRatio = Math.pow(sizeRatio, 0.6);
+                        const baseSize = minSize + exponentialRatio * (maxSize - minSize);
+                        
+                        particle.style.width = `${baseSize}px`;
+                        particle.style.height = `${baseSize}px`;
+                        
+                        // =================================================================
+                        // ASSIGN RANDOM COLOR FROM SURVEY DISTRIBUTION
+                        // =================================================================
+                        const colorIndex = Math.floor(seededRandom(particleSeed + 500) * data.colorDistribution.length);
+                        const baseColor = enhanceColor(data.colorDistribution[colorIndex]);
+                        
+                        // Extract RGB values for glass effect
+                        const r = parseInt(baseColor.slice(1, 3), 16);
+                        const g = parseInt(baseColor.slice(3, 5), 16);
+                        const b = parseInt(baseColor.slice(5, 7), 16);
+                        
+                        // Create multi-layer glass effect background
+                        particle.style.background = `
+                            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 50%),
+                            radial-gradient(circle at 70% 70%, rgba(${r}, ${g}, ${b}, 0.25), transparent 60%),
+                            radial-gradient(circle at 50% 50%, rgba(${r}, ${g}, ${b}, 0.15), transparent 80%),
+                            linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.5), rgba(${r}, ${g}, ${b}, 0.2))
+                        `;
+                        
+                        // Add colored border and enhanced shadows
+                        particle.style.border = `1px solid rgba(${r}, ${g}, ${b}, 0.4)`;
+                        particle.style.boxShadow = `
+                            0 8px 32px rgba(${r}, ${g}, ${b}, 0.15),
+                            0 2px 8px rgba(0, 0, 0, 0.1),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                        `;
+                        
+                        // =================================================================
+                        // ADD TEXT CONTENT (BILINGUAL)
+                        // =================================================================
+                        const text = document.createElement('div');
+                        text.className = 'particle-text';
+                        
+                        if (waveIndex === 1) {
+                            // Middle wave shows Spanish text (before ///)
+                            const spanishText = answer.split('///')[0] ? answer.split('///')[0].trim() : answer;
+                            text.textContent = spanishText;
+                        } else {
+                            // Outer waves show English text (after ///)
+                            const englishText = answer.split('///')[1] ? answer.split('///')[1].trim() : answer;
+                            text.textContent = englishText;
+                        }
+                        
+                        // Scale font size with wave size
+                        text.style.fontSize = `${0.6 + waveScaleFactor * 0.15}rem`;
+                        particle.appendChild(text);
+                        
+                        // =================================================================
+                        // ADD CLICK INTERACTION (NON-TOP-3 ANSWERS)
+                        // =================================================================
+                        const isTop3 = originalIndex < 3; // Top 3 most frequent answers
+                        if (!isTop3) {
+                            particle.addEventListener('click', function() {
+                                // Find all particles with the same answer across all waves
+                                const particlesWithSameAnswer = allParticles.filter(p => p.answer === answer);
+                                
+                                // Burst all particles with the same answer
+                                particlesWithSameAnswer.forEach(p => {
+                                    p.element.style.animation = 'particleBurst 0.6s ease-out forwards';
+                                    setTimeout(() => {
+                                        if (p.element.parentNode) {
+                                            p.element.parentNode.removeChild(p.element);
+                                        }
+                                    }, 600);
+                                });
+                            });
+                        }
+                        
+                        // Store particle data for animations and interactions
+                        const particleData = {
+                            element: particle,
+                            baseSize: baseSize,
+                            index: shuffledIndex,
+                            waveIndex: waveIndex,
+                            totalAnswers: sortedAnswers.length,
+                            seed: particleSeed,
+                            answerIndex: originalIndex,
+                            count: count,
+                            answer: answer
+                        };
+                        
+                        allParticles.push(particleData);
+                        waveInner.appendChild(particle);
+                    });
+                }
+                
+                // =================================================================
+                // PARTICLE APPEARANCE ANIMATION
+                // =================================================================
+                
+                /**
+                 * Animate particles to appear one answer group at a time
+                 * All waves for the same answer appear simultaneously
+                 */
+                function animateParticleAppearance() {
+                    const totalAnswers = sortedAnswers.length;
+                    const appearanceDelay = 1000; // milliseconds between each answer group
+                    
+                    // Group particles by answer for synchronized appearance
+                    for (let answerIndex = 0; answerIndex < totalAnswers; answerIndex++) {
+                        const answerParticles = allParticles.filter(p => p.answerIndex === answerIndex);
+                        
+                        setTimeout(() => {
+                            answerParticles.forEach(particleData => {
+                                particleData.element.style.animation = 'particleAppear 0.8s ease-out forwards';
+                            });
+                        }, 1000 + qIndex * 500 + answerIndex * appearanceDelay);
+                    }
+                }
+                
+                animateParticleAppearance();
+                
+                // =================================================================
+                // TRAVELING PARTICLE CREATION AND ANIMATION
+                // =================================================================
+                
+                /**
+                 * Create a white traveling particle that interacts with others
+                 */
+                function createTravelingParticle() {
+                    const travelingParticle = document.createElement('div');
+                    travelingParticle.className = 'traveling-particle';
+                    waveInner.appendChild(travelingParticle);
+                    
+                    // Calculate when to start (after all particles appear + 15.5 seconds)
+                    const totalAppearanceTime = 1000 + qIndex * 500 + sortedAnswers.length * 1000;
+                    
+                    setTimeout(() => {
+                        animateTravelingParticle(travelingParticle, allParticles, waveInner);
+                    }, totalAppearanceTime + 15500);
+                }
+                
+                /**
+                 * Animate the traveling particle movement and collision detection
+                 * @param {HTMLElement} particle - The traveling particle element
+                 * @param {Array} allParticles - Array of all particles to check collisions with
+                 * @param {HTMLElement} container - Container element for boundaries
+                 */
+                function animateTravelingParticle(particle, allParticles, container) {
+                    const containerWidth = container.offsetWidth;
+                    const containerHeight = container.offsetHeight;
+                    const particleRadius = 10; // Half of particle width (20px / 2)
+                    
+                    // Initial position and movement parameters
+                    let x = particleRadius; // Start at left edge
+                    let y = containerHeight / 2; // Start in vertical center
+                    let direction = 1; // 1 = right, -1 = left
+                    let waveAmplitude = 40; // Height of sine wave movement
+                    let waveFrequency = 0.005; // How tight the sine wave is
+                    let baseY = y; // Base Y position for sine wave
+                    
+                    /**
+                     * Check for collisions between traveling particle and static particles
+                     */
+                    function checkCollisions() {
+                        const particleRect = particle.getBoundingClientRect();
+                        
+                                                    allParticles.forEach(particleData => {
+                            if (!particleData.element.parentNode) return; // Skip if already removed
+                            
+                            const elementRect = particleData.element.getBoundingClientRect();
+                            
+                            // Calculate distance between particle centers
+                            const dx = (particleRect.left + particleRect.width / 2) - (elementRect.left + elementRect.width / 2);
+                            const dy = (particleRect.top + particleRect.height / 2) - (elementRect.top + elementRect.height / 2);
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            // Check if collision occurs (sum of radii)
+                            const collisionDistance = (particleRect.width / 2) + (elementRect.width / 2);
+                            
+                            if (distance < collisionDistance) {
+                                const isTop3 = particleData.answerIndex < 3;
+                                
+                                if (!isTop3) {
+                                    // NON-TOP-3 ANSWERS: Burst and disappear
+                                    const particlesWithSameAnswer = allParticles.filter(p => p.answer === particleData.answer);
+                                    particlesWithSameAnswer.forEach(p => {
+                                        if (p.element.parentNode) {
+                                            p.element.style.animation = 'particleBurst 0.6s ease-out forwards';
+                                            setTimeout(() => {
+                                                if (p.element.parentNode) {
+                                                    p.element.parentNode.removeChild(p.element);
+                                                }
+                                            }, 600);
+                                        }
+                                    });
+                                } else {
+                                    // TOP-3 ANSWERS: Move to edges instead of disappearing
+                                    if (!particleData.element.dataset.displaced) {
+                                        particleData.element.dataset.displaced = 'true';
+                                        
+                                        // Get current position
+                                        const currentLeft = parseFloat(particleData.element.style.left);
+                                        const currentTop = parseFloat(particleData.element.style.top);
+                                        const elementCenterX = currentLeft + parseFloat(particleData.element.style.width) / 2;
+                                        const elementCenterY = currentTop + parseFloat(particleData.element.style.height) / 2;
+                                        
+                                        const elementRadius = parseFloat(particleData.element.style.width) / 2;
+                                        
+                                        // Determine which edge is closest
+                                        const distToLeft = elementCenterX;
+                                        const distToRight = containerWidth - elementCenterX;
+                                        const distToTop = elementCenterY;
+                                        const distToBottom = containerHeight - elementCenterY;
+                                        
+                                        const minDist = Math.min(distToLeft, distToRight, distToTop, distToBottom);
+                                        
+                                        // Calculate target position based on closest edge
+                                        let targetX, targetY;
+                                        if (minDist === distToLeft) {
+                                            targetX = elementRadius;
+                                            targetY = elementCenterY;
+                                        } else if (minDist === distToRight) {
+                                            targetX = containerWidth - elementRadius;
+                                            targetY = elementCenterY;
+                                        } else if (minDist === distToTop) {
+                                            targetX = elementCenterX;
+                                            targetY = elementRadius;
+                                        } else {
+                                            targetX = elementCenterX;
+                                            targetY = containerHeight - elementRadius;
+                                        }
+                                        
+                                        // Animate to edge with bounce effect
+                                        particleData.element.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                                        particleData.element.style.left = `${targetX - elementRadius}px`;
+                                        particleData.element.style.top = `${targetY - elementRadius}px`;
+                                        particleData.element.style.zIndex = '200'; // Bring to front
+                                        particleData.isDisplaced = true; // Mark as displaced
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    
+                    /**
+                     * Main animation loop for traveling particle
+                     */
+                    function animate() {
+                        // Move horizontally
+                        x += 4 * direction; // 4 pixels per frame
+                        
+                        // Add sine wave vertical movement
+                        y = baseY + Math.sin(x * waveFrequency) * waveAmplitude;
+                        
+                        // Keep within vertical boundaries
+                        const minY = particleRadius;
+                        const maxY = containerHeight - particleRadius;
+                        y = Math.max(minY, Math.min(maxY, y));
+                        
+                        // Reverse direction and randomize path at horizontal boundaries
+                        if (x > containerWidth - particleRadius) {
+                            x = containerWidth - particleRadius;
+                            direction = -1; // Move left
+                            // Randomize new path parameters
+                            baseY = particleRadius + Math.random() * (containerHeight - 2 * particleRadius);
+                            waveAmplitude = 20 + Math.random() * 40;
+                            waveFrequency = 0.003 + Math.random() * 0.004;
+                        } else if (x < particleRadius) {
+                            x = particleRadius;
+                            direction = 1; // Move right
+                            // Randomize new path parameters
+                            baseY = particleRadius + Math.random() * (containerHeight - 2 * particleRadius);
+                            waveAmplitude = 20 + Math.random() * 40;
+                            waveFrequency = 0.003 + Math.random() * 0.004;
+                        }
+                        
+                        // Update particle position
+                        particle.style.left = `${x - particleRadius}px`;
+                        particle.style.top = `${y - particleRadius}px`;
+                        
+                        // Check for collisions with other particles
+                        checkCollisions();
+                        
+                        // Continue animation
+                        requestAnimationFrame(animate);
+                    }
+                    
+                    animate(); // Start the animation loop
+                }
+                
+                createTravelingParticle(); // Create and start the traveling particle
+                
+                // =================================================================
+                // WAVE ANIMATION FOR STATIC PARTICLES
+                // =================================================================
+                
+                /**
+                 * Animate particles in three sine waves
+                 * Each wave has different properties for visual variety
+                 */
+                function animateWave() {
+                    const containerWidth = waveInner.offsetWidth;
+                    const containerHeight = waveInner.offsetHeight;
+                    const time = Date.now() * 0.001; // Convert to seconds
+                    const baseWaveSpeed = (0.4 + qIndex * 0.1) * 0.25; // Slower speed (was 0.5, now 0.25)
+                    const waveSpacing = containerHeight / 4; // Divide height for 3 waves
+                    
+                    allParticles.forEach((particleData) => {
+                        const { element, baseSize, index, waveIndex, totalAnswers, seed } = particleData;
+                        
+                        // Skip animation if particle has been displaced to edge
+                        if (particleData.isDisplaced) return;
+                        
+                        // Calculate wave properties (each wave is different)
+                        const waveSpeed = baseWaveSpeed * (1 + waveIndex * 0.3);
+                        const waveAmplitude = (containerHeight * 0.08) * (1 - waveIndex * 0.1);
+                        const centerY = waveSpacing * (waveIndex + 1); // Y center for this wave
+                        
+                        // Distribute particles evenly along X-axis
+                        const spacing = containerWidth / (totalAnswers + 1);
+                        const x = spacing * (index + 1);
+                        
+                        // Calculate Y position using sine wave
+                        const phase = (x / containerWidth) * Math.PI * 2;
+                        const wavePhaseOffset = waveIndex * Math.PI / 3; // Different phase for each wave
+                        const y = centerY + Math.sin(phase + time * waveSpeed + wavePhaseOffset) * waveAmplitude;
+                        
+                        // Add subtle vertical floating animation
+                        const floatY = Math.sin(time * (1.5 + waveIndex * 0.2) + index * 0.5) * (3 + waveIndex);
+                        
+                        // Dynamic scaling based on wave position and time
+                        const scaleVariation = 0.7 + 0.6 * Math.sin(time * 0.8 + seed * 0.1);
+                        const waveScale = 1 + 0.3 * Math.sin(phase + time * waveSpeed * 0.5 + seed * 0.05);
+                        const finalScale = scaleVariation * waveScale;
+                        
+                        const finalSize = baseSize * finalScale;
+                        
+                        // Update particle position and size
+                        element.style.left = `${x - finalSize / 2}px`;
+                        element.style.top = `${y + floatY - finalSize / 2}px`;
+                        element.style.width = `${finalSize}px`;
+                        element.style.height = `${finalSize}px`;
+                        
+                        // Scale text size with particle size
+                        const textElement = element.querySelector('.particle-text');
+                        const waveScaleFactor = waveIndex === 0 ? 1 : waveIndex === 1 ? 0.85 : 0.7;
+                        const newFontSize = (0.6 + waveScaleFactor * 0.15) * Math.sqrt(finalScale);
+                        textElement.style.fontSize = `${newFontSize}rem`;
+                    });
+                    
+                    // Continue wave animation
+                    requestAnimationFrame(animateWave);
+                }
+                
+                // Start wave animation after particles have appeared
+                setTimeout(() => {
+                    animateWave();
+                }, 1500);
+                
+                // Add completed section to container
+                section.appendChild(waveContainer);
+                container.appendChild(section);
+            });
+        }
+        
+        // =================================================================
+        // INITIALIZATION
+        // =================================================================
+        
+        /**
+         * Initialize the visualization when page loads
+         * Uses embedded data for immediate loading (GitHub compatible)
+         */
+        window.addEventListener('load', () => {
+            createVisualization(surveyData);
+        });
+    </script>
+</body>
+</html>
+                <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immigration Journey - Phase 2: New Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                #E84A8A 0%, 
+                #0067A3 15%, 
+                #00A651 30%, 
+                #FF6900 45%, 
+                #663399 60%, 
+                #F7F7F7 75%, 
+                #2B2B2B 90%, 
+                #FFCC00 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            color: #ffffff;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-weight: bold;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        #container {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        #container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+        }
+        
+        .title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+        
+        .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.3s forwards;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+            z-index: 1000;
+        }
+        
+        .question-section {
+            width: 100%;
+            max-width: 1600px;
+            margin-bottom: 100px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.6s forwards;
+        }
+        
+        .question-title {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: bold;
+            margin-bottom: 50px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+        }
+        
+        .wave-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            overflow: visible;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .wave-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: scale(0);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            z-index: 10;
+        }
+        
+        .particle:hover {
+            transform: scale(1.15);
+            z-index: 100;
+            filter: brightness(1.1) saturate(1.2);
+        }
+        
+        .particle-text {
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            max-width: 140px;
+            line-height: 1.3;
+            text-transform: uppercase;
+            text-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.2),
+                0 1px 0 rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+        
+        .traveling-particle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6));
+            box-shadow: 
+                0 0 20px rgba(255, 255, 255, 0.8),
+                0 0 40px rgba(255, 255, 255, 0.6),
+                0 0 60px rgba(255, 255, 255, 0.4),
+                0 4px 16px rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        @keyframes particleAppear {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes particleBurst {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.5);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <button class="back-button" onclick="goBackToPhase1()">← Phase 1</button>
+        <h1 class="title">The Immigrant's Journey</h1>
+        <p class="subtitle">Part 2: New Home - A Visual Story</p>
+        <div id="loading" class="loading">Loading survey data...</div>
+        <div id="questions-container"></div>
+    </div>
+
+    <script>
+        // Navigation function
+        function goBackToPhase1() {
+            // If running in the same page system, you could emit an event
+            if (window.parent) {
+                window.parent.postMessage({ action: 'showPhase1' }, '*');
+            } else {
+                // Fallback - could navigate to phase 1 file
+                window.history.back();
+            }
+        }
+        
+        // Simple seeded random number generator
+        function seededRandom(seed) {
+            const x = Math.sin(seed) * 10000;
+            return x - Math.floor(x);
+        }
+
+        // Survey data from the GitHub structure - Part 2 questions
+        const surveyData = {
+            questions: [
+                {
+                    name: 'Internal Battles',
+                    fullQuestion: 'What major internal battles did you face when you arrived to the United States?',
+                    data: {
+                        'Ansiedad /// Anxiety': 15,
+                        'Soledad /// Loneliness': 11, 
+                        'Desgaste Mental /// Burnout': 11,
+                        'Miedo /// Fear': 10,
+                        'Tristeza /// Sadness': 4,
+                        'Culpa /// Guilt': 3,
+                        'Confusión /// Confusion': 3,
+                        'Insensibilidad /// Numbness': 2,
+                        'Decepción /// Disappointment': 2
+                    }
+                },
+                {
+                    name: 'What Helped Overcome',
+                    fullQuestion: 'What helped you overcome the internal battles you experienced?',
+                    data: {
+                        'Familia o Amigos /// Family or Friends': 18,
+                        'Nuevas Opportunidades /// New Opportunities': 12,
+                        'El sentir seguridad /// To Feel Safety': 10,
+                        'Sueños /// Dreams': 7,
+                        'Ilusiones /// Hopes': 5,
+                        'Arte /// Art': 5,
+                        'Fe /// Faith': 4,
+                        'Nuevos Amigos /// New Friends': 4,
+                        'La Comunidad /// Community': 3,
+                        'La música /// Music': 2
+                    }
+                },
+                {
+                    name: 'Reasons to Choose US',
+                    fullQuestion: 'What were the main reasons that inspired you to choose the United States as your "new home"?',
+                    data: {
+                        'Las oportunidades de Trabajo /// The Opportunities to work': 11,
+                        'La seguridad y establidad del pais /// The safety and stability of the country': 9,
+                        'Acceso a educación de calidad /// Access to world-class education': 8,
+                        '"El Sueño Americano" /// "The American Dream"': 7,
+                        'Acceso a un proceso sencillo para conseguir residencia legal /// Access to a straight forward process to achieve permanent residency': 4,
+                        'Su sistema democratico /// Its democratic system': 2,
+                        'Confianza en su sistema judicial /// Trust in its justice system': 2,
+                        'Familia': 2,
+                        'La diversidad y gran población de inmigrantes /// The diversity and strong immigrant population': 1
+                    }
+                }
+            ],
+            // Color distribution based on Part 1 survey responses
+            colorDistribution: [
+                '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', '#2196F3', // Blue (11)
+                '#4CAF50', '#4CAF50', '#4CAF50', '#4CAF50', '#4CAF50', // Green (5)
+                '#FFC107', '#FFC107', '#FFC107', '#FFC107', // Yellow (4)
+                '#FF9800', '#FF9800', '#FF9800', // Orange (3)
+                '#424242', '#424242', '#424242', // Black (3)
+                '#F44336', '#F44336', // Red (2)
+                '#9C27B0', '#9C27B0', // Purple (2)
+                '#E91E63', // Pink (1)
+                '#FAFAFA'  // White (1)
+            ]
+        };
+
+        // Function to convert hex to HSL
+        function hexToHsl(hex) {
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+
+            return [h * 360, s * 100, l * 100];
+        }
+
+        // Function to convert HSL to hex
+        function hslToHex(h, s, l) {
+            h = h / 360;
+            s = s / 100;
+            l = l / 100;
+
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            const r = hue2rgb(p, q, h + 1/3);
+            const g = hue2rgb(p, q, h);
+            const b = hue2rgb(p, q, h - 1/3);
+
+            const toHex = (c) => {
+                const hex = Math.round(c * 255).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        // Function to enhance color saturation and brightness
+        function enhanceColor(hexColor, saturationIncrease = 40, lightnessIncrease = 8) {
+            const [h, s, l] = hexToHsl(hexColor);
+            const newSaturation = Math.min(100, s + saturationIncrease);
+            const newLightness = Math.min(85, l + lightnessIncrease);
+            return hslToHex(h, newSaturation, newLightness);
+        }
+        
+        // Create particle visualization
+        function createVisualization(data) {
+            const container = document.getElementById('questions-container');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'none';
+            
+            data.questions.forEach((question, qIndex) => {
+                const section = document.createElement('div');
+                section.className = 'question-section';
+                
+                const title = document.createElement('h2');
+                title.className = 'question-title';
+                title.textContent = question.fullQuestion;
+                section.appendChild(title);
+                
+                const waveContainer = document.createElement('div');
+                waveContainer.className = 'wave-container';
+                
+                const waveInner = document.createElement('div');
+                waveInner.className = 'wave-inner';
+                waveContainer.appendChild(waveInner);
+                
+                // Sort answers by count
+                const sortedAnswers = Object.entries(question.data).sort((a, b) => b[1] - a[1]);
+                const allParticles = [];
+                
+                // Create three waves of particles
+                for (let waveIndex = 0; waveIndex < 3; waveIndex++) {
+                    const shuffledAnswers = [...sortedAnswers];
+                    for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+                        const j = Math.floor(seededRandom(qIndex * 1000 + waveIndex * 100 + i) * (i + 1));
+                        [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]];
+                    }
+                    
+                    shuffledAnswers.forEach(([answer, count], shuffledIndex) => {
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        
+                        const originalIndex = sortedAnswers.findIndex(([a]) => a === answer);
+                        const particleSeed = qIndex * 1000 + waveIndex * 100 + shuffledIndex;
+                        
+                        // Calculate size
+                        const maxCount = Math.max(...Object.values(question.data));
+                        const waveScaleFactor = waveIndex === 0 ? 1 : waveIndex === 1 ? 0.85 : 0.7;
+                        const minSize = 40 * waveScaleFactor;
+                        const maxSize = 180 * waveScaleFactor;
+                        const sizeRatio = count / maxCount;
+                        const exponentialRatio = Math.pow(sizeRatio, 0.6);
+                        const baseSize = minSize + exponentialRatio * (maxSize - minSize);
+                        
+                        particle.style.width = `${baseSize}px`;
+                        particle.style.height = `${baseSize}px`;
+                        
+                        // Assign color
+                        const colorIndex = Math.floor(seededRandom(particleSeed + 500) * data.colorDistribution.length);
+                        const baseColor = enhanceColor(data.colorDistribution[colorIndex]);
+                        
+                        const r = parseInt(baseColor.slice(1, 3), 16);
+                        const g = parseInt(baseColor.slice(3, 5), 16);
+                        const b = parseInt(baseColor.slice(5, 7), 16);
+                        
+                        particle.style.background = `
+                            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 50%),
+                            radial-gradient(circle at 70% 70%, rgba(${r}, ${g}, ${b}, 0.25), transparent 60%),
+                            radial-gradient(circle at 50% 50%, rgba(${r}, ${g}, ${b}, 0.15), transparent 80%),
+                            linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.5), rgba(${r}, ${g}, ${b}, 0.2))
+                        `;
+                        
+                        particle.style.border = `1px solid rgba(${r}, ${g}, ${b}, 0.4)`;
+                        particle.style.boxShadow = `
+                            0 8px 32px rgba(${r}, ${g}, ${b}, 0.15),
+                            0 2px 8px rgba(0, 0, 0, 0.1),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                        `;
+                        
+                        // Add text
+                        const text = document.createElement('div');
+                        text.className = 'particle-text';
+                        
+                        if (waveIndex === 1) {
+                            const spanishText = answer.split('///')[0] ? answer.split('///')[0].trim() : answer;
+                            text.textContent = spanishText;
+                        } else {
+                            const englishText = answer.split('///')[1] ? answer.split('///')[1].trim() : answer;
+                            text.textContent = englishText;
+                        }
+                        
+                        text.style.fontSize = `${0.6 + waveScaleFactor * 0.15}rem`;
+                        particle.appendChild(text);
+                        
+                        // Add click handler for non-top-3 answers
+                        const isTop3 = originalIndex < 3;
+                        if (!isTop3) {
+                            particle.addEventListener('click', function() {
+                                const particlesWithSameAnswer = allParticles.filter(p => p.answer === answer);
+                                particlesWithSameAnswer.forEach(p => {
+                                    p.element.style.animation = 'particleBurst 0.6s ease-out forwards';
+                                    setTimeout(() => {
+                                        if (p.element.parentNode) {
+                                            p.element.parentNode.removeChild(p.element);
+                                        }
+                                    }, 600);
+                                });
+                            });
+                        }
+                        
+                        const particleData = {
+                            element: particle,
+                            baseSize: baseSize,
+                            index: shuffledIndex,
+                            waveIndex: waveIndex,
+                            totalAnswers: sortedAnswers.length,
+                            seed: particleSeed,
+                            answerIndex: originalIndex,
+                            count: count,
+                            answer: answer
+                        };
+                        
+                        allParticles.push(particleData);
+                        waveInner.appendChild(particle);
+                    });
+                }
+                
+                // Animate particles to appear
+                function animateParticleAppearance() {
+                    const totalAnswers = sortedAnswers.length;
+                    const appearanceDelay = 1000;
+                    
+                    for (let answerIndex = 0; answerIndex < totalAnswers; answerIndex++) {
+                        const answerParticles = allParticles.filter(p => p.answerIndex === answerIndex);
+                        
+                        setTimeout(() => {
+                            answerParticles.forEach(particleData => {
+                                particleData.element.style.animation = 'particleAppear 0.8s ease-out forwards';
+                            });
+                        }, 1000 + qIndex * 500 + answerIndex * appearanceDelay);
+                    }
+                }
+                
+                animateParticleAppearance();
+                
+                // Create traveling particle
+                function createTravelingParticle() {
+                    const travelingParticle = document.createElement('div');
+                    travelingParticle.className = 'traveling-particle';
+                    waveInner.appendChild(travelingParticle);
+                    
+                    const totalAppearanceTime = 1000 + qIndex * 500 + sortedAnswers.length * 1000;
+                    
+                    setTimeout(() => {
+                        animateTravelingParticle(travelingParticle, allParticles, waveInner);
+                    }, totalAppearanceTime + 15500);
+                }
+                
+                function animateTravelingParticle(particle, allParticles, container) {
+                    const containerWidth = container.offsetWidth;
+                    const containerHeight = container.offsetHeight;
+                    const particleRadius = 10;
+                    let x = particleRadius;
+                    let y = containerHeight / 2;
+                    let direction = 1;
+                    let waveAmplitude = 40;
+                    let waveFrequency = 0.005;
+                    let baseY = y;
+                    
+                    function checkCollisions() {
+                        const particleRect = particle.getBoundingClientRect();
+                        
+                        allParticles.forEach(particleData => {
+                            if (!particleData.element.parentNode) return;
+                            
+                            const elementRect = particleData.element.getBoundingClientRect();
+                            const dx = (particleRect.left + particleRect.width / 2) - (elementRect.left + elementRect.width / 2);
+                            const dy = (particleRect.top + particleRect.height / 2) - (elementRect.top + elementRect.height / 2);
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            const collisionDistance = (particleRect.width / 2) + (elementRect.width / 2);
+                            
+                            if (distance < collisionDistance) {
+                                const isTop3 = particleData.answerIndex < 3;
+                                
+                                if (!isTop3) {
+                                    const particlesWithSameAnswer = allParticles.filter(p => p.answer === particleData.answer);
+                                    particlesWithSameAnswer.forEach(p => {
+                                        if (p.element.parentNode) {
+                                            p.element.style.animation = 'particleBurst 0.6s ease-out forwards';
+                                            setTimeout(() => {
+                                                if (p.element.parentNode) {
+                                                    p.element.parentNode.removeChild(p.element);
+                                                }
+                                            }, 600);
+                                        }
+                                    });
+                                } else {
+                                    // Move top 3 to edges
+                                    if (!particleData.element.dataset.displaced) {
+                                        particleData.element.dataset.displaced = 'true';
+                                        
+                                        const currentLeft = parseFloat(particleData.element.style.left);
+                                        const currentTop = parseFloat(particleData.element.style.top);
+                                        const elementCenterX = currentLeft + parseFloat(particleData.element.style.width) / 2;
+                                        const elementCenterY = currentTop + parseFloat(particleData.element.style.height) / 2;
+                                        
+                                        let targetX, targetY;
+                                        const elementRadius = parseFloat(particleData.element.style.width) / 2;
+                                        
+                                        const distToLeft = elementCenterX;
+                                        const distToRight = containerWidth - elementCenterX;
+                                        const distToTop = elementCenterY;
+                                        const distToBottom = containerHeight - elementCenterY;
+                                        
+                                        const minDist = Math.min(distToLeft, distToRight, distToTop, distToBottom);
+                                        
+                                        if (minDist === distToLeft) {
+                                            targetX = elementRadius;
+                                            targetY = elementCenterY;
+                                        } else if (minDist === distToRight) {
+                                            targetX = containerWidth - elementRadius;
+                                            targetY = elementCenterY;
+                                        } else if (minDist === distToTop) {
+                                            targetX = elementCenterX;
+                                            targetY = elementRadius;
+                                        } else {
+                                            targetX = elementCenterX;
+                                            targetY = containerHeight - elementRadius;
+                                        }
+                                        
+                                        particleData.element.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                                        particleData.element.style.left = `${targetX - elementRadius}px`;
+                                        particleData.element.style.top = `${targetY - elementRadius}px`;
+                                        particleData.element.style.zIndex = '200';
+                                        particleData.isDisplaced = true;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    
+                    function animate() {
+                        x += 4 * direction;
+                        y = baseY + Math.sin(x * waveFrequency) * waveAmplitude;
+                        
+                        const minY = particleRadius;
+                        const maxY = containerHeight - particleRadius;
+                        y = Math.max(minY, Math.min(maxY, y));
+                        
+                        if (x > containerWidth - particleRadius) {
+                            x = containerWidth - particleRadius;
+                            direction = -1;
+                            baseY = particleRadius + Math.random() * (containerHeight - 2 * particleRadius);
+                            waveAmplitude = 20 + Math.random() * 40;
+                            waveFrequency = 0.003 + Math.random() * 0.004;
+                        } else if (x < particleRadius) {
+                            x = particleRadius;
+                            direction = 1;
+                            baseY = particleRadius + Math.random() * (containerHeight - 2 * particleRadius);
+                            waveAmplitude = 20 + Math.random() * 40;
+                            waveFrequency = 0.003 + Math.random() * 0.004;
+                        }
+                        
+                        particle.style.left = `${x - particleRadius}px`;
+                        particle.style.top = `${y - particleRadius}px`;
+                        
+                        checkCollisions();
+                        requestAnimationFrame(animate);
+                    }
+                    
+                    animate();
+                }
+                
+                createTravelingParticle();
+                
+                // Animate waves
+                function animateWave() {
+                    const containerWidth = waveInner.offsetWidth;
+                    const containerHeight = waveInner.offsetHeight;
+                    const time = Date.now() * 0.001;
+                    const baseWaveSpeed = (0.4 + qIndex * 0.1) * 0.25;
+                    const waveSpacing = containerHeight / 4;
+                    
+                    allParticles.forEach((particleData) => {
+                        const { element, baseSize, index, waveIndex, totalAnswers, seed } = particleData;
+                        
+                        if (particleData.isDisplaced) return;
+                        
+                        const waveSpeed = baseWaveSpeed * (1 + waveIndex * 0.3);
+                        const waveAmplitude = (containerHeight * 0.08) * (1 - waveIndex * 0.1);
+                        const centerY = waveSpacing * (waveIndex + 1);
+                        
+                        const spacing = containerWidth / (totalAnswers + 1);
+                        const x = spacing * (index + 1);
+                        
+                        const phase = (x / containerWidth) * Math.PI * 2;
+                        const wavePhaseOffset = waveIndex * Math.PI / 3;
+                        const y = centerY + Math.sin(phase + time * waveSpeed + wavePhaseOffset) * waveAmplitude;
+                        
+                        const floatY = Math.sin(time * (1.5 + waveIndex * 0.2) + index * 0.5) * (3 + waveIndex);
+                        
+                        const scaleVariation = 0.7 + 0.6 * Math.sin(time * 0.8 + seed * 0.1);
+                        const waveScale = 1 + 0.3 * Math.sin(phase + time * waveSpeed * 0.5 + seed * 0.05);
+                        const finalScale = scaleVariation * waveScale;
+                        
+                        const finalSize = baseSize * finalScale;
+                        
+                        element.style.left = `${x - finalSize / 2}px`;
+                        element.style.top = `${y + floatY - finalSize / 2}px`;
+                        element.style.width = `${finalSize}px`;
+                        element.style.height = `${finalSize}px`;
+                        
+                        const textElement = element.querySelector('.particle-text');
+                        const waveScaleFactor = waveIndex === 0 ? 1 : waveIndex === 1 ? 0.85 : 0.7;
+                        const newFontSize = (0.6 + waveScaleFactor * 0.15) * Math.sqrt(finalScale);
+                        textElement.style.fontSize = `${newFontSize}rem`;
+                    });
+                    
+                    requestAnimationFrame(animateWave);
+                }
+                
+                setTimeout(() => {
+                    animateWave();
+                }, 1500);
+                
+                section.appendChild(waveContainer);
+                container.appendChild(section);
+            });
+        }
+        
+        // Initialize immediately with embedded data
+        window.addEventListener('load', () => {
+            createVisualization(surveyData);
+        });
+    </script>
+</body>
+</html>
