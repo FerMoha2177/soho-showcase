@@ -95,7 +95,7 @@ class Phase3 {
     this.renderBubbleLayer(context, time, 'concern');
     
     // Show gravitational statistics and project context
-    if (time < 60) { // Show for first 60 seconds
+    if (time < 180) { // Show for first 180 seconds
       this.renderProjectContext(context, width, height);
     }
   }
